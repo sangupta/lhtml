@@ -1,6 +1,8 @@
 # lhtml
 
 [![Build Status](https://github.com/sangupta/lhtml/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/sangupta/lhtml/actions)
+[![go.mod version](https://img.shields.io/github/go-mod/go-version/sangupta/lhtml.svg)](https://github.com/sangupta/lhtml)
+![GitHub](https://img.shields.io/github/license/sangupta/lhtml)
 
 `lhtml` is a lenient HTML parser for Go. 
 
