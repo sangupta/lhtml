@@ -22,4 +22,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Test
-        run: go test -v -cover
+        run: go test ./... -v -coverprofile coverage.out
+
+      - name: Generate coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out
