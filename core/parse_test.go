@@ -1,16 +1,24 @@
+/**
+ * lhtml - Lenient HTML parser for Go.
+ *
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * https://github.com/sangupta/lhtml
+ *
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository:
+ */
+
 package core
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSimplestHtml(t *testing.T) {
-	html := "<html>Hello World</html>"
-	reader := strings.NewReader(html)
-	doc, err := Parse(reader)
+	doc, err := getDoc("<html>Hello World</html>")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
@@ -18,9 +26,7 @@ func TestSimplestHtml(t *testing.T) {
 }
 
 func TestOnlyString(t *testing.T) {
-	html := "Hello World"
-	reader := strings.NewReader(html)
-	doc, err := Parse(reader)
+	doc, err := getDoc("Hello World")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
@@ -29,9 +35,7 @@ func TestOnlyString(t *testing.T) {
 }
 
 func TestHead(t *testing.T) {
-	html := "<html><head>Hello World</head></html>"
-	reader := strings.NewReader(html)
-	doc, err := Parse(reader)
+	doc, err := getDoc("<html><head>Hello World</head></html>")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
@@ -41,9 +45,7 @@ func TestHead(t *testing.T) {
 }
 
 func TestHeadWithError(t *testing.T) {
-	html := "<html><head>Hello World</head><head>second head</head></html>"
-	reader := strings.NewReader(html)
-	doc, err := Parse(reader)
+	doc, err := getDoc("<html><head>Hello World</head><head>second head</head></html>")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
@@ -54,9 +56,7 @@ func TestHeadWithError(t *testing.T) {
 }
 
 func TestBody(t *testing.T) {
-	html := "<html><body>Hello World</body></html>"
-	reader := strings.NewReader(html)
-	doc, err := Parse(reader)
+	doc, err := getDoc("<html><body>Hello World</body></html>")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())

@@ -18,8 +18,6 @@ package core
 // standard ones.
 //
 type HtmlDocument struct {
-	head  *HtmlNode
-	body  *HtmlNode
 	Nodes []*HtmlNode // list of nodes at the top level
 }
 
@@ -43,11 +41,21 @@ func (document *HtmlDocument) appendNode(node *HtmlNode) {
 }
 
 func (document *HtmlDocument) Head() *HtmlNode {
-	return document.head
+	elements := document.GetElementsByName("head")
+	if elements == nil || elements.NumNodes() == 0 {
+		return nil
+	}
+
+	return elements.Nodes[0]
 }
 
 func (document *HtmlDocument) Body() *HtmlNode {
-	return document.body
+	elements := document.GetElementsByName("body")
+	if elements == nil || elements.NumNodes() == 0 {
+		return nil
+	}
+
+	return elements.Nodes[0]
 }
 
 //
@@ -68,14 +76,6 @@ func (document *HtmlDocument) IsEmpty() bool {
 // if there is nothing on the stack
 //
 func (document *HtmlDocument) addNodeToStack(node *HtmlNode, stack *nodeStack) {
-	if document.head == nil && node.NodeName() == "head" {
-		document.head = node
-	}
-
-	if document.body == nil && node.NodeName() == "body" {
-		document.body = node
-	}
-
 	// push this node on to the stack (and optionally document) itself
 	if !stack.isEmpty() {
 		// stack already has something so let's set parent-child relationship

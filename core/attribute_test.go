@@ -1,3 +1,14 @@
+/**
+ * lhtml - Lenient HTML parser for Go.
+ *
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * https://github.com/sangupta/lhtml
+ *
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository:
+ */
+
 package core
 
 import (
@@ -6,6 +17,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+func getDoc(html string) (*HtmlDocument, error) {
+	reader := strings.NewReader(html)
+	return Parse(reader)
+}
 
 func getAttributeDoc() (*HtmlDocument, error) {
 	html := "<html class='a1' class='b1' class='c1'>Hello World</html>"
@@ -32,4 +48,15 @@ func TestAttributes(t *testing.T) {
 	assert.NotNil(t, node.GetAttributeWithValue("class", "a1"))
 
 	assert.Nil(t, node.GetAttributeWithValue("class", "d1"))
+}
+
+func TestEmptyAttributes(t *testing.T) {
+	doc, err := getDoc("<html>Hello World</html>")
+	assert.NoError(t, err)
+
+	node := doc.Nodes[0]
+	assert.False(t, node.HasAttribute("class"))
+	assert.Nil(t, node.GetAttribute("class"))
+	assert.Nil(t, node.GetAttributes("class"))
+	assert.Nil(t, node.GetAttributeWithValue("class", "b1"))
 }

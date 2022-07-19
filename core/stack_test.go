@@ -1,3 +1,14 @@
+/**
+ * lhtml - Lenient HTML parser for Go.
+ *
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * https://github.com/sangupta/lhtml
+ *
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository:
+ */
+
 package core
 
 import (
@@ -30,8 +41,8 @@ func TestStack(t *testing.T) {
 	assert.True(t, stack.isEmpty())
 }
 
-func newNode(name string) *HtmlNode {
-	return &HtmlNode{
-		TagName: name,
-	}
+func TestUninitializedStack(t *testing.T) {
+	stack := nodeStack{}
+
+	assert.Equal(t, 0, stack.NumNodes())
 }

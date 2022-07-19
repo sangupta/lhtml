@@ -44,3 +44,5 @@ docs/*
 .flexLibProperties
 
 # Project specific
+coverage.out
+coverage.html

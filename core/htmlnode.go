@@ -102,3 +102,9 @@ func (node *HtmlNode) detach() {
 	node.Parent = nil
 	node.document = nil
 }
+
+func newNode(name string) *HtmlNode {
+	return &HtmlNode{
+		TagName: name,
+	}
+}
