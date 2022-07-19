@@ -39,15 +39,6 @@ func NewHtmlDocument() *HtmlDocument {
 //
 func (document *HtmlDocument) appendNode(node *HtmlNode) {
 	node.document = document
-
-	if document.head == nil && node.NodeName() == "head" {
-		document.head = node
-	}
-
-	if document.body == nil && node.NodeName() == "body" {
-		document.body = node
-	}
-
 	document.Nodes = append(document.Nodes, node)
 }
 
@@ -77,6 +68,14 @@ func (document *HtmlDocument) IsEmpty() bool {
 // if there is nothing on the stack
 //
 func (document *HtmlDocument) addNodeToStack(node *HtmlNode, stack *nodeStack) {
+	if document.head == nil && node.NodeName() == "head" {
+		document.head = node
+	}
+
+	if document.body == nil && node.NodeName() == "body" {
+		document.body = node
+	}
+
 	// push this node on to the stack (and optionally document) itself
 	if !stack.isEmpty() {
 		// stack already has something so let's set parent-child relationship

@@ -49,6 +49,14 @@ func (node *HtmlNode) NodeName() string {
 	return strings.TrimSpace(node.TagName)
 }
 
+func (node *HtmlNode) NumChildren() int {
+	if node.Children == nil {
+		return 0
+	}
+
+	return len(node.Children)
+}
+
 //
 // Add a child node to this node.
 //
