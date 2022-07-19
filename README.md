@@ -1,6 +1,7 @@
 # lhtml
 
 [![Build Status](https://github.com/sangupta/lhtml/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/sangupta/lhtml/actions)
+[![Code Coverage](https://codecov.io/gh/sangupta/lhtml/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/gh/sangupta/lhtml)
 [![go.mod version](https://img.shields.io/github/go-mod/go-version/sangupta/lhtml.svg)](https://github.com/sangupta/lhtml)
 ![GitHub](https://img.shields.io/github/license/sangupta/lhtml)
 
