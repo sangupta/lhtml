@@ -25,6 +25,7 @@ func TestOnlyString(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
 	assert.Equal(t, TextNode, doc.Nodes[0].NodeType)
+	assert.Equal(t, "Hello World", doc.Nodes[0].Data)
 }
 
 func TestHead(t *testing.T) {
@@ -50,4 +51,16 @@ func TestHeadWithError(t *testing.T) {
 	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
 	assert.Equal(t, 1, doc.Nodes[0].Children[1].NumChildren())
 	assert.Equal(t, doc.Nodes[0].Children[0], doc.Head())
+}
+
+func TestBody(t *testing.T) {
+	html := "<html><body>Hello World</body></html>"
+	reader := strings.NewReader(html)
+	doc, err := Parse(reader)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 1, doc.NumNodes())
+	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
+	assert.Equal(t, doc.Nodes[0].Children[0], doc.Body())
 }
