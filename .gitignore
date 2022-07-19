@@ -1,0 +1,47 @@
+# Java noise
+*.class
+target/*
+*/.settings/*
+*/target/*
+*/.gitignore
+
+# SCM directories
+.svn
+.cvs
+
+# OSX noise
+.DS_Store
+*.pbxuser
+profile
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Archive files
+*.zip
+*.rar
+*.gz
+*.tar.gz
+*.7z
+
+# Windows noise
+desktop.ini
+
+# Go-lang
+go.sum
+
+# Eclipse/Flash Builder noise
+.actionScriptProperties
+.flexProperties
+.project
+.classpath
+bin/*
+bin-debug/*
+report/*
+bin-test/*
+docs/*
+.flexLibProperties
+
+# Project specific
