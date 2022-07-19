@@ -1,5 +1,7 @@
 # lhtml
 
+[![Build Status](https://github.com/sangupta/lhtml/actions/workflows/unittest.yml/badge.svg?branch=master)](https://github.com/sangupta/lhtml/actions)
+
 `lhtml` is a lenient HTML parser for Go. 
 
 It differs from the standard `html` package because it will not re-order 
