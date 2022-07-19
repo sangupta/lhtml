@@ -30,7 +30,6 @@ profile
 desktop.ini
 
 # Go-lang
-go.sum
 
 # Eclipse/Flash Builder noise
 .actionScriptProperties
