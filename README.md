@@ -30,7 +30,7 @@ which want to process their own custom tags and attributes.
 * No sanitization of the resulting DOM
 * Allows using custom tag/attributes
 * Provides node discovery functions, such as, `GetElementById`
-* Provides function to walk entire DOM tree easily
+* Provides function to walk entire DOM tree easily, `Traverse(visitor)`
 * Provides functions to `remove`, `replace` nodes
 
 For example, the HTML `title` tag cannot contain another tag. Given the
