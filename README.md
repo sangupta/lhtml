@@ -14,53 +14,25 @@ which want to process their own custom tags and attributes.
 
 # Table of contents
 
-* [Details](#details)
+* [Features](#features)
 * [API](#api)
 * [Usage](#usage)
+* [Examples](#examples)
 * [Changelog](#changelog)
 * [Related Projects](#related-projects)
 * [License](#license)
 
-# Details
+# Features
 
 `lhtml` diffes from standard `html` parser in the following ways:
 
 * Tag can have multiple attributes with same name
 * Tags can occur in any order, under any parent
-* No sanitization of the resulting DOM
+* No sanitization of the resulting DOM ([example](#no-dom-sanitization))
 * Allows using custom tag/attributes
 * Provides node discovery functions, such as, `GetElementById`
-* Provides function to walk entire DOM tree easily, `Traverse(visitor)`
+* Provides function to walk entire DOM tree easily, `Traverse(visitor)` ([example](#traversing-the-dom))
 * Provides functions to `remove`, `replace` nodes
-
-For example, the HTML `title` tag cannot contain another tag. Given the
-following html:
-
-```html
-<html>
-    <head>
-        <title>
-            <custom:PageTitle />
-        </title>
-    </head>
-</html>
-```
-
-The standard Go implementation will parse it to:
-
-```html
-<html>
-    <head>
-        <title>
-            &lt; custom:PageTitle /&gt;
-        </title>
-    </head>
-</html>
-```
-
-However, when using `lhtml` you will get the exact markup as defined
-above. It is left to the callee code on how it wants to interpret and
-use the parsed DOM nodes.
 
 # API
 
@@ -111,10 +83,69 @@ func test() {
 }
 ```
 
+# Examples
+
+## No DOM sanitization
+
+For example, the HTML `title` tag cannot contain another tag. Given the
+following html:
+
+```html
+<html>
+    <head>
+        <title>
+            <custom:PageTitle />
+        </title>
+    </head>
+</html>
+```
+
+The standard Go implementation will parse it to:
+
+```html
+<html>
+    <head>
+        <title>
+            &lt; custom:PageTitle /&gt;
+        </title>
+    </head>
+</html>
+```
+
+However, when using `lhtml` you will get the exact markup as defined
+above. It is left to the callee code on how it wants to interpret and
+use the parsed DOM nodes.
+
+## Traversing the DOM
+
+```go
+func test() {
+    doc, err := lhtml.ParseString("<html><head><title>Example</title></head><body><h1>Hello World</h1></body></html>")
+    if err != nil {
+        panic(err)
+    }
+
+    s := ""
+	called := 0
+	visitor := func(node *HtmlNode) bool {
+		called++
+		if node.NodeType != ElementNode {
+			return true
+		}
+		s = s + " " + node.NodeName()
+		return true
+	}
+
+    doc.Traverse(visitor)
+	fmt.Println(s)          // " html head title body h1"
+    fmt.Println(called)     // 7 (5 element nodes, 2 text nodes)
+}
+```
+
 # Changelog
 
-* Version 0.1.0
-  - Initial release
+* **Version 0.1.0**
+  - Initial release `$ go get github.com/sangupta/lhtml@v0.1.0`
 
 # Related projects
 
