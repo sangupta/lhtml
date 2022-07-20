@@ -16,7 +16,7 @@ import (
 	"io"
 	"strings"
 
-	"sangupta.com/lhtml/core"
+	"github.com/sangupta/lhtml/core"
 )
 
 //

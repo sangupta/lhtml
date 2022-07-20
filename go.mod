@@ -1,4 +1,4 @@
-module sangupta.com/lhtml
+module github.com/sangupta/lhtml
 
 go 1.13
 
