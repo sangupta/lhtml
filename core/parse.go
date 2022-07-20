@@ -148,7 +148,7 @@ func handleErrorToken(document *HtmlDocument, tokenizer *html.Tokenizer) error {
 	fmt.Println(err)
 
 	// TODO: handle other error scenarios
-	panic(errors.New("error not handled"))
+	return errors.New("error not handled")
 }
 
 //

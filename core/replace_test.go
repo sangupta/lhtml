@@ -62,6 +62,11 @@ func TestReplaceChild(t *testing.T) {
 	assert.Equal(t, "head", doc.Nodes[0].Children[0].NodeName())
 	assert.True(t, doc.Nodes[0].ReplaceChild(doc.Nodes[0].Children[0], node))
 	assert.Equal(t, "a1", doc.Nodes[0].Children[0].NodeName())
+
+	// when node has no child
+	doc, err = getDoc("<html></html>")
+	assert.NoError(t, err)
+	assert.False(t, doc.Nodes[0].ReplaceChild(node, node))
 }
 
 func TestReplaceEmptyDoc(t *testing.T) {

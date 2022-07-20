@@ -17,22 +17,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNumChildren(t *testing.T) {
-	node := HtmlNode{}
+func TestNumChildrenDoc(t *testing.T) {
+	node := HtmlDocument{}
 
 	// must check for `nil` children slice
-	assert.Equal(t, 0, node.NumChildren())
-}
-
-func TestGetDocType(t *testing.T) {
-	doc, err := getDoc("")
-	assert.NoError(t, err)
-
-	assert.Nil(t, doc.GetDocType()) // empty string
-
-	doc, err = getDoc("<html />")
-	assert.Nil(t, doc.GetDocType())
-
-	doc, err = getDoc("<!doctype html><html />")
-	assert.NotNil(t, doc.GetDocType())
+	assert.Equal(t, 0, node.NumNodes())
 }

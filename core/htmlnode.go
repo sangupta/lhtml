@@ -80,6 +80,20 @@ func (node *HtmlNode) HasChildren() bool {
 	return true
 }
 
+func (doc *HtmlDocument) GetDocType() *HtmlNode {
+	if doc.IsEmpty() {
+		return nil
+	}
+
+	for _, node := range doc.Nodes {
+		if node.NodeType == DoctypeNode {
+			return node
+		}
+	}
+
+	return nil
+}
+
 //
 // Add a new attribute to this node. By design, we allow a single
 // tag to hold multiple values for the same attribute name. This is

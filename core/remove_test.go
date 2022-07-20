@@ -12,6 +12,8 @@
 package core
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -126,4 +128,24 @@ func TestRemoveChildNode(t *testing.T) {
 	assert.Equal(t, 1, head.NumChildren())
 	assert.True(t, head.RemoveChild(head.Children[0]))
 	assert.Equal(t, 0, head.NumChildren())
+
+	// another one
+	doc, err = getDoc("<html />")
+	assert.False(t, doc.Nodes[0].RemoveChild(node))
+}
+
+func TestPlainText(t *testing.T) {
+	doc, err := getDoc("hello world")
+	assert.Nil(t, err)
+
+	assert.Equal(t, 1, doc.NumNodes())
+	assert.Equal(t, TextNode, doc.Nodes[0].NodeType)
+}
+
+func TestErrorDocs(t *testing.T) {
+	doc, err := getDoc("</html>")
+	assert.NotNil(t, err)
+
+	j, _ := json.MarshalIndent(doc, "", "  ")
+	fmt.Println(string(j))
 }
