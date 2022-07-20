@@ -12,8 +12,6 @@
 package core
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -140,12 +138,4 @@ func TestPlainText(t *testing.T) {
 
 	assert.Equal(t, 1, doc.NumNodes())
 	assert.Equal(t, TextNode, doc.Nodes[0].NodeType)
-}
-
-func TestErrorDocs(t *testing.T) {
-	doc, err := getDoc("</html>")
-	assert.NotNil(t, err)
-
-	j, _ := json.MarshalIndent(doc, "", "  ")
-	fmt.Println(string(j))
 }
