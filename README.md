@@ -83,15 +83,15 @@ func ParseHtmlString(html string) (*core.HtmlDocument, error)
 Simply add the library to your project:
 
 ```sh
-$ go get sangupta.com/lhtml
+$ go get github.com/sangupta/lhtml@v0.1.0
 ```
 
 And then, use it to parse your HTML markup:
 
 ```go
 import (
-    "sangupta.com/lhtml"
-    "sangupta.com/lhtml/core"
+    "github.com/sangupta/lhtml"
+    "github.com/sangupta/lhtml/core"
 )
 
 func test() {
