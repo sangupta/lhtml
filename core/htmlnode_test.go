@@ -23,16 +23,3 @@ func TestNumChildren(t *testing.T) {
 	// must check for `nil` children slice
 	assert.Equal(t, 0, node.NumChildren())
 }
-
-func TestGetDocType(t *testing.T) {
-	doc, err := getDoc("")
-	assert.NoError(t, err)
-
-	assert.Nil(t, doc.GetDocType()) // empty string
-
-	doc, err = getDoc("<html />")
-	assert.Nil(t, doc.GetDocType())
-
-	doc, err = getDoc("<!doctype html><html />")
-	assert.NotNil(t, doc.GetDocType())
-}

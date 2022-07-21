@@ -11,6 +11,8 @@
 
 package core
 
+import "strings"
+
 //
 // Holds the values for an attribute pair.
 //
@@ -36,12 +38,12 @@ func (node *HtmlNode) HasAttribute(key string) bool {
 // Returns an `HtmlNode` if found, `nil` otherwise
 //
 func (node *HtmlNode) GetAttribute(key string) *HtmlAttribute {
-	if !node.HasAttributes {
+	if !node.HasAttributes() {
 		return nil
 	}
 
 	for _, attr := range node.Attributes {
-		if attr.Name == key {
+		if strings.EqualFold(attr.Name, key) {
 			return attr
 		}
 	}
@@ -49,19 +51,75 @@ func (node *HtmlNode) GetAttribute(key string) *HtmlAttribute {
 	return nil
 }
 
+func (node *HtmlNode) RemoveAttribute(key string) bool {
+	if !node.HasAttributes() {
+		return false
+	}
+
+	modified := false
+	newAttributes := make([]*HtmlAttribute, 0)
+	for _, attr := range node.Attributes {
+		if strings.EqualFold(attr.Name, key) {
+			modified = true
+			continue
+		}
+		newAttributes = append(newAttributes, attr)
+	}
+
+	if modified {
+		node.Attributes = newAttributes
+	}
+
+	return modified
+}
+
+func (node *HtmlNode) SetAttribute(key string, value string) bool {
+	if node.HasAttributes() {
+		// do we have the attribute with matching name?
+		for _, attr := range node.Attributes {
+			if strings.EqualFold(attr.Name, key) {
+				attr.Value = value
+				return true
+			}
+		}
+	}
+
+	// no attributes in node, add one
+	if node.Attributes == nil {
+		node.Attributes = make([]*HtmlAttribute, 0)
+	}
+
+	node.Attributes = append(node.Attributes, &HtmlAttribute{
+		Name:  key,
+		Value: value,
+	})
+
+	return true
+}
+
+// //
+// // This method remove all duplicate attributes from the node.
+// // If `merge` is set to `true`, the value from each attribute is
+// // combined together a space. If it's set to `false` the attributes
+// // occuring later are removed.
+// //
+// func (node *HtmlNode) RemoveDuplicateAttributes(merge bool) {
+
+// }
+
 //
 // Find and return all attributes that have the given name.
 //
 // Returns a slice of `HtmlNode` if found, `nil` otherwise
 //
 func (node *HtmlNode) GetAttributes(key string) []*HtmlAttribute {
-	if !node.HasAttributes {
+	if !node.HasAttributes() {
 		return nil
 	}
 
 	result := make([]*HtmlAttribute, 0)
 	for _, attr := range node.Attributes {
-		if attr.Name == key {
+		if strings.EqualFold(attr.Name, key) {
 			result = append(result, attr)
 		}
 	}
@@ -75,7 +133,7 @@ func (node *HtmlNode) GetAttributes(key string) []*HtmlAttribute {
 // Returns either a `HtmlAttribute` instance, `nil` otherwise
 //
 func (node *HtmlNode) GetAttributeWithValue(key string, value string) *HtmlAttribute {
-	if !node.HasAttributes {
+	if !node.HasAttributes() {
 		return nil
 	}
 

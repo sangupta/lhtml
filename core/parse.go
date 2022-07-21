@@ -101,7 +101,6 @@ func readElementNode(tokenizer *html.Tokenizer) *HtmlNode {
 	tagName, hasAttributes := tokenizer.TagName()
 	node := HtmlNode{
 		TagName:       string(tagName),
-		HasAttributes: hasAttributes,
 		IsSelfClosing: false,
 		NodeType:      ElementNode,
 	}
@@ -132,7 +131,7 @@ func handleDocTypeToken(document *HtmlDocument, tokenizer *html.Tokenizer) error
 		NodeType: DoctypeNode,
 		Parent:   nil,
 	}
-	document.InsertFirrst(&node)
+	document.InsertFirst(&node)
 	return nil
 }
 

@@ -19,6 +19,11 @@ import (
 	"github.com/sangupta/lhtml/core"
 )
 
+type ParseOptions struct {
+	CaseSensitiveAttributes bool
+	AllowMultipleAttributes bool
+}
+
 //
 // A loose HTML parser that just returns the tags and their
 // attributes in the order they appear. It makes no assumption

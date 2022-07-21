@@ -36,7 +36,6 @@ const (
 type HtmlNode struct {
 	TagName       string
 	Parent        *HtmlNode `json:"-"`
-	HasAttributes bool
 	Attributes    []*HtmlAttribute
 	Children      []*HtmlNode
 	IsSelfClosing bool
@@ -44,6 +43,14 @@ type HtmlNode struct {
 	Data          string
 	document      *HtmlDocument // the document node that this node belongs to
 }
+
+func newNode(name string) *HtmlNode {
+	return &HtmlNode{
+		TagName: name,
+	}
+}
+
+//----- basic property accessors
 
 func (node *HtmlNode) NodeName() string {
 	return strings.TrimSpace(node.TagName)
@@ -58,17 +65,6 @@ func (node *HtmlNode) NumChildren() int {
 }
 
 //
-// Add a child node to this node.
-//
-func (node *HtmlNode) addChild(child *HtmlNode) {
-	if len(node.Children) == 0 {
-		node.Children = make([]*HtmlNode, 0)
-	}
-
-	node.Children = append(node.Children, child)
-}
-
-//
 // Quick check to see if this node has any children
 // or not.
 //
@@ -80,19 +76,174 @@ func (node *HtmlNode) HasChildren() bool {
 	return true
 }
 
-func (doc *HtmlDocument) GetDocType() *HtmlNode {
-	if doc.IsEmpty() {
-		return nil
+func (node *HtmlNode) HasAttributes() bool {
+	if node.Attributes == nil || len(node.Attributes) == 0 {
+		return false
 	}
 
-	for _, node := range doc.Nodes {
-		if node.NodeType == DoctypeNode {
-			return node
+	return true
+}
+
+//----- FIND methods
+
+func (node *HtmlNode) GetElementsByName(name string) *HtmlDocument {
+	elements := NewHtmlDocument()
+	node.getElementsByName(name, elements)
+	return elements
+}
+
+func (node *HtmlNode) getElementsByName(name string, elements *HtmlDocument) {
+	name = strings.TrimSpace(name)
+	name = strings.ToLower(name)
+
+	if node.TagName == name {
+		elements.appendNode(node)
+	}
+
+	if !node.HasChildren() {
+		return
+	}
+
+	for _, child := range node.Children {
+		child.getElementsByName(name, elements)
+	}
+}
+
+//
+// Find a node within this node (including this one) which has an
+// ID value as the given value.
+//
+// Returns `HtmlNode` instance if found, `nil` otherwise
+//
+func (node *HtmlNode) GetElementById(id string) *HtmlNode {
+	if node.GetAttributeWithValue("id", id) != nil {
+		return node
+	}
+
+	if !node.HasChildren() {
+		return nil
+	}
+	for _, child := range node.Children {
+		found := child.GetElementById(id)
+		if found != nil {
+			return found
 		}
 	}
 
 	return nil
 }
+
+func (node *HtmlNode) PrevSibling() *HtmlNode {
+	return nil
+}
+
+func (node *HtmlNode) NextSibling() *HtmlNode {
+	return nil
+}
+
+//----- Manipulation methods
+
+//
+// Remove all children from this `HtmlNode`.
+//
+func (node *HtmlNode) RemoveAllChildren() {
+	if !node.HasChildren() {
+		return
+	}
+
+	node.Children = make([]*HtmlNode, 0)
+}
+
+//
+// Remove this node from its parent node, or from the document.
+//
+// Returns `true` if the node was actually removed, `false`
+// otherwise
+//
+func (node *HtmlNode) RemoveMe() bool {
+	if node.Parent == nil {
+		if node.document == nil {
+			return false
+		}
+
+		return node.document.RemoveNode(node)
+	}
+
+	return node.Parent.RemoveChild(node)
+}
+
+//
+// Remove the given child from this node.
+//
+// Returns `true` if the node was actually removed, `false`
+// otherwise
+//
+func (node *HtmlNode) RemoveChild(child *HtmlNode) bool {
+	if !node.HasChildren() {
+		return false
+	}
+
+	for index, c := range node.Children {
+		if c == child {
+			child.detach()
+			node.Children = append(node.Children[:index], node.Children[index+1:]...)
+			return true
+		}
+	}
+
+	return false
+}
+
+//
+// Replace the given node with provided replacement by ensuring
+// whether it has a parent, or is directly attached to document.
+//
+// Returns `true` if the node was actually replaced, `false`
+// otherwise
+//
+func (node *HtmlNode) ReplaceMe(replacement *HtmlNode) bool {
+	if replacement == nil {
+		return false
+	}
+
+	if node.Parent == nil {
+		return node.document.ReplaceNode(node, replacement)
+	}
+
+	return node.Parent.ReplaceChild(node, replacement)
+}
+
+//
+// Replace a child of this node with given replacement.
+//
+// Returns `true` if the node was actually replaced, `false`
+// otherwise
+//
+func (node *HtmlNode) ReplaceChild(original *HtmlNode, replacement *HtmlNode) bool {
+	if original == nil {
+		return false
+	}
+
+	if replacement == nil {
+		return false
+	}
+
+	if !node.HasChildren() {
+		return false
+	}
+
+	for index, child := range node.Children {
+		if child == original {
+			original.detach()
+			node.Children[index] = replacement
+			return true
+		}
+	}
+
+	return false
+}
+
+//----- Internal methods
 
 //
 // Add a new attribute to this node. By design, we allow a single
@@ -112,13 +263,18 @@ func (node *HtmlNode) addAttribute(key string, value string) {
 	})
 }
 
+//
+// Add a child node to this node.
+//
+func (node *HtmlNode) addChild(child *HtmlNode) {
+	if len(node.Children) == 0 {
+		node.Children = make([]*HtmlNode, 0)
+	}
+
+	node.Children = append(node.Children, child)
+}
+
 func (node *HtmlNode) detach() {
 	node.Parent = nil
 	node.document = nil
-}
-
-func newNode(name string) *HtmlNode {
-	return &HtmlNode{
-		TagName: name,
-	}
 }
