@@ -33,7 +33,7 @@ func TestAttributes(t *testing.T) {
 	doc, err := getAttributeDoc()
 	assert.NoError(t, err)
 
-	assert.Equal(t, 1, doc.NumNodes())
+	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	node := doc.nodes[0]

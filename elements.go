@@ -26,7 +26,7 @@ type HtmlElements struct {
 // This has no nodes defined and is totally empty. It is
 // used to initialize the internal structure.
 //
-func newHtmlElements() *HtmlElements {
+func NewHtmlElements() *HtmlElements {
 	return &HtmlElements{
 		nodes: make([]*HtmlNode, 0),
 	}
@@ -40,7 +40,7 @@ func (elements *HtmlElements) AsHtmlDocument() *HtmlDocument {
 
 //----- basic property accessors
 
-func (elements *HtmlElements) NumNodes() int {
+func (elements *HtmlElements) Length() int {
 	if elements.nodes == nil {
 		return 0
 	}
@@ -62,16 +62,16 @@ func (elements *HtmlElements) IsEmpty() bool {
 
 //----- Get various dedicated nodes
 
-func (elements *HtmlElements) FirstNode() *HtmlNode {
-	if elements.NumNodes() == 0 {
+func (elements *HtmlElements) First() *HtmlNode {
+	if elements.Length() == 0 {
 		return nil
 	}
 
 	return elements.nodes[0]
 }
 
-func (elements *HtmlElements) LastNode() *HtmlNode {
-	num := elements.NumNodes()
+func (elements *HtmlElements) Last() *HtmlNode {
+	num := elements.Length()
 	if num == 0 {
 		return nil
 	}
@@ -79,8 +79,8 @@ func (elements *HtmlElements) LastNode() *HtmlNode {
 	return elements.nodes[num-1]
 }
 
-func (elements *HtmlElements) GetNode(index int) *HtmlNode {
-	num := elements.NumNodes()
+func (elements *HtmlElements) Get(index int) *HtmlNode {
+	num := elements.Length()
 	if index < 0 || index >= num {
 		return nil
 	}
@@ -102,7 +102,7 @@ func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
 		return nil
 	}
 
-	result := newHtmlElements()
+	result := NewHtmlElements()
 	for _, child := range elements.nodes {
 		child.getElementsByName(name, result)
 	}
@@ -141,18 +141,14 @@ func (elements *HtmlElements) InsertFirst(node *HtmlNode) {
 	elements.nodes = append([]*HtmlNode{node}, elements.nodes...)
 }
 
-//
-// Append the given node to the list of nodes in this document.
-//
-func (elements *HtmlElements) appendNode(node *HtmlNode) {
-	node.document = elements
+func (elements *HtmlElements) InsertLast(node *HtmlNode) {
 	elements.nodes = append(elements.nodes, node)
 }
 
 //
 // Remove all nodes from this document.
 //
-func (elements *HtmlElements) RemoveAllNodes() {
+func (elements *HtmlElements) Empty() {
 	if elements.IsEmpty() {
 		return
 	}
@@ -166,7 +162,7 @@ func (elements *HtmlElements) RemoveAllNodes() {
 // Returns `true` if the node was actually removed, `false`
 // otherwise
 //
-func (elements *HtmlElements) RemoveNode(node *HtmlNode) bool {
+func (elements *HtmlElements) Remove(node *HtmlNode) bool {
 	if elements.IsEmpty() {
 		return false
 	}
@@ -189,7 +185,7 @@ func (elements *HtmlElements) RemoveNode(node *HtmlNode) bool {
 // Returns `true` if the node was actually replaced, `false`
 // otherwise
 //
-func (elements *HtmlElements) ReplaceNode(original *HtmlNode, replacement *HtmlNode) bool {
+func (elements *HtmlElements) Replace(original *HtmlNode, replacement *HtmlNode) bool {
 	if original == nil {
 		return false
 	}
@@ -241,4 +237,12 @@ func (elements *HtmlElements) addNodeToStack(node *HtmlNode, stack *nodeStack) {
 
 	// push this node to stack
 	stack.push(node)
+}
+
+//
+// Append the given node to the list of nodes in this document.
+//
+func (elements *HtmlElements) appendNode(node *HtmlNode) {
+	node.document = elements
+	elements.nodes = append(elements.nodes, node)
 }

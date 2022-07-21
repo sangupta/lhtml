@@ -91,7 +91,7 @@ func (node *HtmlNode) HasAttributes() bool {
 //----- FIND methods
 
 func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
-	elements := newHtmlElements()
+	elements := NewHtmlElements()
 	node.getElementsByName(name, elements)
 	return elements
 }
@@ -170,7 +170,7 @@ func (node *HtmlNode) RemoveMe() bool {
 			return false
 		}
 
-		return node.document.RemoveNode(node)
+		return node.document.Remove(node)
 	}
 
 	return node._parent.RemoveChild(node)
@@ -211,7 +211,7 @@ func (node *HtmlNode) ReplaceMe(replacement *HtmlNode) bool {
 	}
 
 	if node._parent == nil {
-		return node.document.ReplaceNode(node, replacement)
+		return node.document.Replace(node, replacement)
 	}
 
 	return node._parent.ReplaceChild(node, replacement)

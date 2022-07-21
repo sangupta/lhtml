@@ -59,9 +59,9 @@ func TestNodeRemoveMe(t *testing.T) {
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// remove html?
-	assert.Equal(t, 1, doc.NumNodes())
+	assert.Equal(t, 1, doc.Length())
 	assert.True(t, doc.nodes[0].RemoveMe())
-	assert.Equal(t, 0, doc.NumNodes())
+	assert.Equal(t, 0, doc.Length())
 }
 
 func TestNodeRemoveChild(t *testing.T) {

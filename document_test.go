@@ -27,7 +27,7 @@ func TestReplaceHead(t *testing.T) {
 	assert.NotNil(t, doc.AsHtmlDocument().Head())
 
 	// head is not direct descendant of head
-	assert.False(t, doc.ReplaceNode(doc.AsHtmlDocument().Head(), node))
+	assert.False(t, doc.Replace(doc.AsHtmlDocument().Head(), node))
 	assert.NotNil(t, doc.AsHtmlDocument().Head())
 	assert.NotEqual(t, node, doc.AsHtmlDocument().Head())
 }

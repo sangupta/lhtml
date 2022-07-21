@@ -17,7 +17,7 @@ type HtmlDocument struct {
 
 func (document *HtmlDocument) Head() *HtmlNode {
 	elements := document.GetElementsByName("head")
-	if elements == nil || elements.NumNodes() == 0 {
+	if elements == nil || elements.Length() == 0 {
 		return nil
 	}
 
@@ -26,7 +26,7 @@ func (document *HtmlDocument) Head() *HtmlNode {
 
 func (document *HtmlDocument) Body() *HtmlNode {
 	elements := document.GetElementsByName("body")
-	if elements == nil || elements.NumNodes() == 0 {
+	if elements == nil || elements.Length() == 0 {
 		return nil
 	}
 
