@@ -26,13 +26,28 @@ which want to process their own custom tags and attributes.
 
 `lhtml` diffes from standard `html` parser in the following ways:
 
-* Tag can have multiple attributes with same name
-* Tags can occur in any order, under any parent
-* No sanitization of the resulting DOM ([example](#no-dom-sanitization))
-* Allows using custom tag/attributes
-* Provides node discovery functions, such as, `GetElementById`
-* Provides function to walk entire DOM tree easily, `Traverse(visitor)` ([example](#traversing-the-dom))
-* Provides functions to `remove`, `replace` nodes
+* Single parsing funtion that handles both documents as well as fragments
+  - `ParseHtml`
+* You may allow tags to have multiple attributes with same name
+  - `ParseOption#AllowMultipleAttributesWithSameName`
+* No sanitization of the resulting DOM
+  - [example](#no-dom-sanitization)
+* Provides node discovery functions
+  - `GetElementById`
+  - `GetElementsByName`
+  - `GetBefore`
+  - `GetAfter`
+  - `Get` (at index)
+  - `First`
+  - `Last`
+* Manipulation functions
+  - `InsertFirst`
+  - `InsertLast`
+  - `EmptyChildren`
+  - `Remove`
+  - `Replace`
+* Visitor functions when building tree, or to walk tree
+  - `Traverse(visitor)` ([example](#traversing-the-dom))
 
 # API
 
