@@ -18,7 +18,7 @@ import (
 )
 
 func TestNumChildrenDoc(t *testing.T) {
-	node := HtmlDocument{}
+	node := HtmlElements{}
 
 	// must check for `nil` children slice
 	assert.Equal(t, 0, node.NumNodes())

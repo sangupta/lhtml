@@ -18,12 +18,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getDoc(html string) (*HtmlDocument, error) {
+func getDoc(html string) (*HtmlElements, error) {
 	reader := strings.NewReader(html)
 	return ParseHtml(reader)
 }
 
-func getAttributeDoc() (*HtmlDocument, error) {
+func getAttributeDoc() (*HtmlElements, error) {
 	html := "<html class='a1' class='b1' class='c1'>Hello World</html>"
 	reader := strings.NewReader(html)
 	return ParseHtml(reader)

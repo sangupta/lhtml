@@ -45,7 +45,7 @@ func getDefaultOptions() *ParseOptions {
 // provides convenience functions to achieve some of the
 // templating work quickly.
 //
-func ParseHtml(reader io.Reader) (*HtmlDocument, error) {
+func ParseHtml(reader io.Reader) (*HtmlElements, error) {
 	if reader == nil {
 		return nil, errors.New("Reader is required to parse html.")
 	}
@@ -62,7 +62,7 @@ func ParseHtml(reader io.Reader) (*HtmlDocument, error) {
 // error is `nil`, the `HtmlDocument` instance would be available.
 // If the error is not `nil`, the `HtmlDocument` will be `nil`.
 //
-func ParseHtmlString(html string) (*HtmlDocument, error) {
+func ParseHtmlString(html string) (*HtmlElements, error) {
 	if len(html) == 0 {
 		return NewHtmlDocument(), nil
 	}

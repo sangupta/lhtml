@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getVisitorDoc() (*HtmlDocument, error) {
+func getVisitorDoc() (*HtmlElements, error) {
 	html := "<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>"
 	reader := strings.NewReader(html)
 	return ParseHtml(reader)

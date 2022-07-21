@@ -27,7 +27,7 @@ const whitespace = " \t\r\n\f"
 // and tries to return the `HtmlDocument` on a best-effort
 // basis.
 //
-func ParseWithOptions(reader io.Reader, options *ParseOptions) (*HtmlDocument, error) {
+func ParseWithOptions(reader io.Reader, options *ParseOptions) (*HtmlElements, error) {
 	// create a new stack
 	stack := newNodeStack()
 
@@ -56,7 +56,7 @@ func ParseWithOptions(reader io.Reader, options *ParseOptions) (*HtmlDocument, e
 //
 // Parse the given token and return an error, if any.
 //
-func parseToken(document *HtmlDocument, tokenizer *html.Tokenizer, token *html.TokenType, stack *nodeStack) error {
+func parseToken(document *HtmlElements, tokenizer *html.Tokenizer, token *html.TokenType, stack *nodeStack) error {
 	switch *token {
 
 	// handle the doctype token
@@ -121,7 +121,7 @@ func readElementNode(tokenizer *html.Tokenizer) *HtmlNode {
 	return &node
 }
 
-func handleDocTypeToken(document *HtmlDocument, tokenizer *html.Tokenizer) error {
+func handleDocTypeToken(document *HtmlElements, tokenizer *html.Tokenizer) error {
 	docType := tokenizer.Token().Data
 
 	// we currently do not parse doc type to reveal information
@@ -135,7 +135,7 @@ func handleDocTypeToken(document *HtmlDocument, tokenizer *html.Tokenizer) error
 	return nil
 }
 
-func handleErrorToken(document *HtmlDocument, tokenizer *html.Tokenizer) error {
+func handleErrorToken(document *HtmlElements, tokenizer *html.Tokenizer) error {
 	err := tokenizer.Err()
 
 	// if we ran into end-of-file we will return from
@@ -155,7 +155,7 @@ func handleErrorToken(document *HtmlDocument, tokenizer *html.Tokenizer) error {
 // this may be an attribute
 // or this may be some textnode as a child
 // lets process
-func handleTextToken(document *HtmlDocument, stack *nodeStack, tokenizer *html.Tokenizer) error {
+func handleTextToken(document *HtmlElements, stack *nodeStack, tokenizer *html.Tokenizer) error {
 	text := string(tokenizer.Text())
 	text = strings.TrimLeft(text, whitespace)
 	if len(text) == 0 {
@@ -172,7 +172,7 @@ func handleTextToken(document *HtmlDocument, stack *nodeStack, tokenizer *html.T
 	return nil
 }
 
-func handleCommentToken(document *HtmlDocument, tokenizer *html.Tokenizer) error {
+func handleCommentToken(document *HtmlElements, tokenizer *html.Tokenizer) error {
 	comment := tokenizer.Token().Data
 	node := HtmlNode{
 		Data:     comment,
@@ -188,7 +188,7 @@ func handleCommentToken(document *HtmlDocument, tokenizer *html.Tokenizer) error
 // have to pop all the way down to see if we have a node
 // with the end name
 //
-func handleEndTagToken(document *HtmlDocument, stack *nodeStack, tokenizer *html.Tokenizer) error {
+func handleEndTagToken(document *HtmlElements, stack *nodeStack, tokenizer *html.Tokenizer) error {
 	tagName, _ := tokenizer.TagName()
 
 	// if stack is empty, this is a wrong tag
@@ -211,7 +211,7 @@ func handleEndTagToken(document *HtmlDocument, stack *nodeStack, tokenizer *html
 	return errors.New("not implemented")
 }
 
-func handleStartTagToken(document *HtmlDocument, stack *nodeStack, tokenizer *html.Tokenizer, popElement bool) error {
+func handleStartTagToken(document *HtmlElements, stack *nodeStack, tokenizer *html.Tokenizer, popElement bool) error {
 	node := readElementNode(tokenizer)
 	document.addNodeToStack(node, stack)
 

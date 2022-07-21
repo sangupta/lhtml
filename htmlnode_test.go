@@ -25,7 +25,7 @@ func TestNumChildren(t *testing.T) {
 	assert.Equal(t, 0, node.NumChildren())
 }
 
-func getRemoveDoc() (*HtmlDocument, error) {
+func getRemoveDoc() (*HtmlElements, error) {
 	html := "<html><head>Hello World</head><head>second head</head></html>"
 	reader := strings.NewReader(html)
 	return ParseHtml(reader)
@@ -85,7 +85,7 @@ func TestNodeRemoveChild(t *testing.T) {
 	assert.False(t, doc.Nodes[0].RemoveChild(node))
 }
 
-func getReplaceDoc() (*HtmlDocument, error) {
+func getReplaceDoc() (*HtmlElements, error) {
 	html := "<html><head></head></html>"
 	reader := strings.NewReader(html)
 	return ParseHtml(reader)

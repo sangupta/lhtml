@@ -41,7 +41,7 @@ type HtmlNode struct {
 	IsSelfClosing bool
 	NodeType      HtmlNodeType
 	Data          string
-	document      *HtmlDocument // the document node that this node belongs to
+	document      *HtmlElements // the document node that this node belongs to
 }
 
 func newNode(name string) *HtmlNode {
@@ -90,13 +90,13 @@ func (node *HtmlNode) HasAttributes() bool {
 
 //----- FIND methods
 
-func (node *HtmlNode) GetElementsByName(name string) *HtmlDocument {
+func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
 	elements := NewHtmlDocument()
 	node.getElementsByName(name, elements)
 	return elements
 }
 
-func (node *HtmlNode) getElementsByName(name string, elements *HtmlDocument) {
+func (node *HtmlNode) getElementsByName(name string, elements *HtmlElements) {
 	name = strings.TrimSpace(name)
 	name = strings.ToLower(name)
 

@@ -22,7 +22,7 @@ type HtmlNodeVisitor func(node *HtmlNode) bool
 //
 // Allow traversing over the `HtmlDocument`.
 //
-func (doc *HtmlDocument) Traverse(visitor HtmlNodeVisitor) {
+func (doc *HtmlElements) Traverse(visitor HtmlNodeVisitor) {
 	if visitor == nil {
 		return
 	}
