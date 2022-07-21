@@ -12,17 +12,18 @@
 package lhtml
 
 //
-// The structure that holds the HTML document.
-// This is different from the internal `html` package
-// as the functions we provide are different than the
-// standard ones.
+// The structure that holds a group of HTML elements.
+// This is similar to `HtmlDocument` except that it can
+// hold HTML fragments as well. Thus, it is different
+// from the internal `html` package as the functions it
+// provide are different than the standard ones.
 //
 type HtmlElements struct {
 	nodes []*HtmlNode // list of nodes at the top level
 }
 
 //
-// Function that returns a new empty `HtmlDocument` object.
+// Function that returns a new empty `HtmlElements` object.
 // This has no nodes defined and is totally empty. It is
 // used to initialize the internal structure.
 //
@@ -32,6 +33,12 @@ func NewHtmlElements() *HtmlElements {
 	}
 }
 
+//
+// Convert this `HtmlElements` instance into a `HtmlDocument`
+// instance. Note, in case of fragments, most of the `HtmlDocument`
+// functions will return `nil` unless you add them (for example, for
+// a simple fragment, `document.Head()` will return `nil`).
+//
 func (elements *HtmlElements) AsHtmlDocument() *HtmlDocument {
 	return &HtmlDocument{
 		HtmlElements: *elements,
@@ -40,6 +47,9 @@ func (elements *HtmlElements) AsHtmlDocument() *HtmlDocument {
 
 //----- basic property accessors
 
+//
+// Return the length of elements inside this instance.
+//
 func (elements *HtmlElements) Length() int {
 	if elements.nodes == nil {
 		return 0
@@ -62,6 +72,9 @@ func (elements *HtmlElements) IsEmpty() bool {
 
 //----- Get various dedicated nodes
 
+//
+// Return the first node in this list of nodes.
+//
 func (elements *HtmlElements) First() *HtmlNode {
 	if elements.Length() == 0 {
 		return nil
@@ -70,6 +83,9 @@ func (elements *HtmlElements) First() *HtmlNode {
 	return elements.nodes[0]
 }
 
+//
+// Return the last node in this list of nodes.
+//
 func (elements *HtmlElements) Last() *HtmlNode {
 	num := elements.Length()
 	if num == 0 {
@@ -79,6 +95,10 @@ func (elements *HtmlElements) Last() *HtmlNode {
 	return elements.nodes[num-1]
 }
 
+//
+// Return the node at the given index. If index is out
+// of bounds, this function shall return `nil`.
+//
 func (elements *HtmlElements) Get(index int) *HtmlNode {
 	num := elements.Length()
 	if index < 0 || index >= num {
@@ -90,6 +110,9 @@ func (elements *HtmlElements) Get(index int) *HtmlNode {
 
 //----- FIND methods
 
+//
+// Get the node occuring before this node in the list.
+//
 func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
 	if child == nil {
 		return nil
@@ -108,6 +131,9 @@ func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
 	return nil
 }
 
+//
+// Get the node occuring after this node in the list.
+//
 func (elements *HtmlElements) GetAfter(child *HtmlNode) *HtmlNode {
 	if child == nil {
 		return nil
@@ -130,7 +156,7 @@ func (elements *HtmlElements) GetAfter(child *HtmlNode) *HtmlNode {
 // Find and return all elements in this document that match
 // the given name/tag name/node name.
 //
-// Returns an instance of `HtmlDocument` which contains all the
+// Returns an instance of `HtmlElements` which contains all the
 // selected nodes.
 //
 func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
@@ -147,7 +173,7 @@ func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
 }
 
 //
-// Find a node within this document which has an
+// Find a node within this list of elements which has an
 // ID value as the given value.
 //
 // Returns `HtmlNode` instance if found, `nil` otherwise
@@ -173,10 +199,18 @@ func (elements *HtmlElements) GetElementById(id string) *HtmlNode {
 
 //----- Manipulation methods
 
+//
+// Insert the given node as the first node in the list
+// of elements.
+//
 func (elements *HtmlElements) InsertFirst(node *HtmlNode) {
 	elements.nodes = append([]*HtmlNode{node}, elements.nodes...)
 }
 
+//
+// Insert the given node as the last node in the list
+// of elements.
+//
 func (elements *HtmlElements) InsertLast(node *HtmlNode) {
 	elements.nodes = append(elements.nodes, node)
 }
