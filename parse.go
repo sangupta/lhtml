@@ -129,7 +129,7 @@ func handleDocTypeToken(document *HtmlDocument, tokenizer *html.Tokenizer) error
 	node := HtmlNode{
 		Data:     docType,
 		NodeType: DoctypeNode,
-		Parent:   nil,
+		_parent:  nil,
 	}
 	document.InsertFirst(&node)
 	return nil

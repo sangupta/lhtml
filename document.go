@@ -234,7 +234,7 @@ func (doc *HtmlDocument) ReplaceNode(original *HtmlNode, replacement *HtmlNode) 
 
 			// detach & attach
 			original.detach()
-			replacement.Parent = nil
+			replacement._parent = nil
 			replacement.document = doc
 
 			// all done
@@ -258,7 +258,7 @@ func (document *HtmlDocument) addNodeToStack(node *HtmlNode, stack *nodeStack) {
 		// stack already has something so let's set parent-child relationship
 		parent := stack.peek()
 		parent.addChild(node)
-		node.Parent = parent
+		node._parent = parent
 	} else {
 		// stack is empty, as this is top-most node
 		// we will add it to document

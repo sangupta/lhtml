@@ -35,7 +35,7 @@ const (
 //
 type HtmlNode struct {
 	TagName       string
-	Parent        *HtmlNode `json:"-"`
+	_parent       *HtmlNode `json:"-"`
 	Attributes    []*HtmlAttribute
 	Children      []*HtmlNode
 	IsSelfClosing bool
@@ -62,6 +62,10 @@ func (node *HtmlNode) NumChildren() int {
 	}
 
 	return len(node.Children)
+}
+
+func (node *HtmlNode) Parent() *HtmlNode {
+	return node._parent
 }
 
 //
@@ -161,7 +165,7 @@ func (node *HtmlNode) RemoveAllChildren() {
 // otherwise
 //
 func (node *HtmlNode) RemoveMe() bool {
-	if node.Parent == nil {
+	if node._parent == nil {
 		if node.document == nil {
 			return false
 		}
@@ -169,7 +173,7 @@ func (node *HtmlNode) RemoveMe() bool {
 		return node.document.RemoveNode(node)
 	}
 
-	return node.Parent.RemoveChild(node)
+	return node._parent.RemoveChild(node)
 }
 
 //
@@ -206,11 +210,11 @@ func (node *HtmlNode) ReplaceMe(replacement *HtmlNode) bool {
 		return false
 	}
 
-	if node.Parent == nil {
+	if node._parent == nil {
 		return node.document.ReplaceNode(node, replacement)
 	}
 
-	return node.Parent.ReplaceChild(node, replacement)
+	return node._parent.ReplaceChild(node, replacement)
 }
 
 //
@@ -275,6 +279,6 @@ func (node *HtmlNode) addChild(child *HtmlNode) {
 }
 
 func (node *HtmlNode) detach() {
-	node.Parent = nil
+	node._parent = nil
 	node.document = nil
 }
