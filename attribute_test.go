@@ -9,7 +9,7 @@
  * that can be found in LICENSE file in the code repository:
  */
 
-package core
+package lhtml
 
 import (
 	"strings"
@@ -20,13 +20,13 @@ import (
 
 func getDoc(html string) (*HtmlDocument, error) {
 	reader := strings.NewReader(html)
-	return Parse(reader)
+	return ParseHtml(reader)
 }
 
 func getAttributeDoc() (*HtmlDocument, error) {
 	html := "<html class='a1' class='b1' class='c1'>Hello World</html>"
 	reader := strings.NewReader(html)
-	return Parse(reader)
+	return ParseHtml(reader)
 }
 
 func TestAttributes(t *testing.T) {

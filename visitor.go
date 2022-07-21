@@ -9,7 +9,7 @@
  * that can be found in LICENSE file in the code repository:
  */
 
-package core
+package lhtml
 
 //
 // Defines a simple contract for a node visitor. The visitor

@@ -9,7 +9,7 @@
  * that can be found in LICENSE file in the code repository:
  */
 
-package core
+package lhtml
 
 //
 // A simple stack to hold our own `HtmlNode` objects.

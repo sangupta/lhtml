@@ -9,7 +9,7 @@
  * that can be found in LICENSE file in the code repository:
  */
 
-package core
+package lhtml
 
 import (
 	"strings"
@@ -28,7 +28,7 @@ func TestNumChildren(t *testing.T) {
 func getRemoveDoc() (*HtmlDocument, error) {
 	html := "<html><head>Hello World</head><head>second head</head></html>"
 	reader := strings.NewReader(html)
-	return Parse(reader)
+	return ParseHtml(reader)
 }
 
 func TestNodeRemoveAllChildren(t *testing.T) {
@@ -88,7 +88,7 @@ func TestNodeRemoveChild(t *testing.T) {
 func getReplaceDoc() (*HtmlDocument, error) {
 	html := "<html><head></head></html>"
 	reader := strings.NewReader(html)
-	return Parse(reader)
+	return ParseHtml(reader)
 }
 
 func TestNodeReplaceMe(t *testing.T) {

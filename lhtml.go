@@ -15,13 +15,18 @@ import (
 	"errors"
 	"io"
 	"strings"
-
-	"github.com/sangupta/lhtml/core"
 )
 
 type ParseOptions struct {
 	CaseSensitiveAttributes bool
 	AllowMultipleAttributes bool
+}
+
+func getDefaultOptions() *ParseOptions {
+	return &ParseOptions{
+		CaseSensitiveAttributes: false,
+		AllowMultipleAttributes: false,
+	}
 }
 
 //
@@ -40,12 +45,12 @@ type ParseOptions struct {
 // provides convenience functions to achieve some of the
 // templating work quickly.
 //
-func ParseHtml(reader io.Reader) (*core.HtmlDocument, error) {
+func ParseHtml(reader io.Reader) (*HtmlDocument, error) {
 	if reader == nil {
 		return nil, errors.New("Reader is required to parse html.")
 	}
 
-	return core.Parse(reader)
+	return ParseWithOptions(reader, getDefaultOptions())
 }
 
 //
@@ -57,9 +62,9 @@ func ParseHtml(reader io.Reader) (*core.HtmlDocument, error) {
 // error is `nil`, the `HtmlDocument` instance would be available.
 // If the error is not `nil`, the `HtmlDocument` will be `nil`.
 //
-func ParseHtmlString(html string) (*core.HtmlDocument, error) {
+func ParseHtmlString(html string) (*HtmlDocument, error) {
 	if len(html) == 0 {
-		return core.NewHtmlDocument(), nil
+		return NewHtmlDocument(), nil
 	}
 
 	reader := strings.NewReader(html)

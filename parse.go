@@ -9,7 +9,7 @@
  * that can be found in LICENSE file in the code repository:
  */
 
-package core
+package lhtml
 
 import (
 	"errors"
@@ -27,7 +27,7 @@ const whitespace = " \t\r\n\f"
 // and tries to return the `HtmlDocument` on a best-effort
 // basis.
 //
-func Parse(reader io.Reader) (*HtmlDocument, error) {
+func ParseWithOptions(reader io.Reader, options *ParseOptions) (*HtmlDocument, error) {
 	// create a new stack
 	stack := newNodeStack()
 
