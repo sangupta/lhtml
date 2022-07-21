@@ -34,9 +34,9 @@ func TestAttributes(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
-	node := doc.Nodes[0]
+	node := doc.nodes[0]
 	assert.True(t, node.HasAttribute("class"))
 	assert.False(t, node.HasAttribute("id"))
 
@@ -54,7 +54,7 @@ func TestEmptyAttributes(t *testing.T) {
 	doc, err := getDoc("<html>Hello World</html>")
 	assert.NoError(t, err)
 
-	node := doc.Nodes[0]
+	node := doc.nodes[0]
 	assert.False(t, node.HasAttribute("class"))
 	assert.Nil(t, node.GetAttribute("class"))
 	assert.Nil(t, node.GetAttributes("class"))

@@ -31,7 +31,7 @@ func (doc *HtmlElements) Traverse(visitor HtmlNodeVisitor) {
 		return
 	}
 
-	for _, node := range doc.Nodes {
+	for _, node := range doc.nodes {
 		shouldContinue := node.Traverse(visitor)
 		if !shouldContinue {
 			break

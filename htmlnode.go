@@ -91,7 +91,7 @@ func (node *HtmlNode) HasAttributes() bool {
 //----- FIND methods
 
 func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
-	elements := NewHtmlDocument()
+	elements := newHtmlElements()
 	node.getElementsByName(name, elements)
 	return elements
 }

@@ -35,7 +35,7 @@ func ParseWithOptions(reader io.Reader, options *ParseOptions) (*HtmlElements, e
 	tokenizer := html.NewTokenizer(reader)
 
 	// create a document instance that we can use
-	document := NewHtmlDocument()
+	document := newHtmlElements()
 
 	// let's start parsing
 	for {

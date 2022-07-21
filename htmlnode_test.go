@@ -35,32 +35,32 @@ func TestNodeRemoveAllChildren(t *testing.T) {
 	doc, err := getDoc("<html />")
 	assert.NoError(t, err)
 
-	doc.Nodes[0].RemoveAllChildren()
+	doc.nodes[0].RemoveAllChildren()
 
 	// if you have kids
 	doc, err = getDoc("<html><head /><body /></html>")
 	assert.NoError(t, err)
 
-	doc.Nodes[0].RemoveAllChildren()
+	doc.nodes[0].RemoveAllChildren()
 }
 
 func TestNodeRemoveMe(t *testing.T) {
 	doc, err := getDoc("<html><head /><body /></html>")
 	assert.NoError(t, err)
 
-	head := doc.Head()
+	head := doc.AsHtmlDocument().Head()
 	// try removing head
-	assert.Equal(t, 2, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 2, doc.nodes[0].NumChildren())
 	assert.True(t, head.RemoveMe())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// removing again?
 	assert.False(t, head.RemoveMe())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// remove html?
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.True(t, doc.Nodes[0].RemoveMe())
+	assert.True(t, doc.nodes[0].RemoveMe())
 	assert.Equal(t, 0, doc.NumNodes())
 }
 
@@ -68,7 +68,7 @@ func TestNodeRemoveChild(t *testing.T) {
 	doc, err := getDoc("<html><head><title></title></head><body /></html>")
 	assert.NoError(t, err)
 
-	head := doc.Head()
+	head := doc.AsHtmlDocument().Head()
 	node := newNode("a1")
 
 	// node which is not a child
@@ -82,7 +82,7 @@ func TestNodeRemoveChild(t *testing.T) {
 
 	// another one
 	doc, err = getDoc("<html />")
-	assert.False(t, doc.Nodes[0].RemoveChild(node))
+	assert.False(t, doc.nodes[0].RemoveChild(node))
 }
 
 func getReplaceDoc() (*HtmlElements, error) {
@@ -95,12 +95,12 @@ func TestNodeReplaceMe(t *testing.T) {
 	doc, err := getRemoveDoc()
 	assert.NoError(t, err)
 
-	assert.False(t, doc.Nodes[0].ReplaceMe(nil))
+	assert.False(t, doc.nodes[0].ReplaceMe(nil))
 
 	node := newNode("a1")
-	assert.Equal(t, "html", doc.Nodes[0].NodeName())
-	assert.True(t, doc.Nodes[0].ReplaceMe(node))
-	assert.Equal(t, "a1", doc.Nodes[0].NodeName())
+	assert.Equal(t, "html", doc.nodes[0].NodeName())
+	assert.True(t, doc.nodes[0].ReplaceMe(node))
+	assert.Equal(t, "a1", doc.nodes[0].NodeName())
 }
 
 func TestNodeReplaceChild(t *testing.T) {
@@ -108,17 +108,17 @@ func TestNodeReplaceChild(t *testing.T) {
 	assert.NoError(t, err)
 
 	node := newNode("a1")
-	assert.False(t, doc.Nodes[0].ReplaceChild(nil, node))
-	assert.False(t, doc.Nodes[0].ReplaceChild(doc.Nodes[0].Children[0], nil))
+	assert.False(t, doc.nodes[0].ReplaceChild(nil, node))
+	assert.False(t, doc.nodes[0].ReplaceChild(doc.nodes[0].Children[0], nil))
 
-	assert.Equal(t, "head", doc.Nodes[0].Children[0].NodeName())
-	assert.True(t, doc.Nodes[0].ReplaceChild(doc.Nodes[0].Children[0], node))
-	assert.Equal(t, "a1", doc.Nodes[0].Children[0].NodeName())
+	assert.Equal(t, "head", doc.nodes[0].Children[0].NodeName())
+	assert.True(t, doc.nodes[0].ReplaceChild(doc.nodes[0].Children[0], node))
+	assert.Equal(t, "a1", doc.nodes[0].Children[0].NodeName())
 
 	// when node has no child
 	doc, err = getDoc("<html></html>")
 	assert.NoError(t, err)
-	assert.False(t, doc.Nodes[0].ReplaceChild(node, node))
+	assert.False(t, doc.nodes[0].ReplaceChild(node, node))
 }
 
 func TestNodeGetElementsByName(t *testing.T) {
@@ -126,6 +126,6 @@ func TestNodeGetElementsByName(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.NotNil(t, doc.GetElementsByName("html"))
-	assert.NotNil(t, doc.Nodes[0].GetElementsByName("head"))
-	assert.NotNil(t, doc.Nodes[0].GetElementsByName("HEAD"))
+	assert.NotNil(t, doc.nodes[0].GetElementsByName("head"))
+	assert.NotNil(t, doc.nodes[0].GetElementsByName("HEAD"))
 }

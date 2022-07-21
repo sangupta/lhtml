@@ -24,19 +24,6 @@ func TestNumChildrenDoc(t *testing.T) {
 	assert.Equal(t, 0, node.NumNodes())
 }
 
-func TestGetDocType(t *testing.T) {
-	doc, err := getDoc("")
-	assert.NoError(t, err)
-
-	assert.Nil(t, doc.GetDocType()) // empty string
-
-	doc, err = getDoc("<html />")
-	assert.Nil(t, doc.GetDocType())
-
-	doc, err = getDoc("<!doctype html><html />")
-	assert.NotNil(t, doc.GetDocType())
-}
-
 func TestDocReplaceEmpty(t *testing.T) {
 	doc, err := getDoc("")
 	assert.NoError(t, err)
@@ -52,10 +39,10 @@ func TestDocRemoveAll(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 2, doc.Nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.Nodes[0].Children[0], doc.Head())
+	assert.Equal(t, 2, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
 
 	// remove all on doc
 	doc.RemoveAllNodes()
@@ -76,12 +63,12 @@ func TestDocRemoveNode(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 2, doc.Nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.Nodes[0].Children[0], doc.Head())
+	assert.Equal(t, 2, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
 
-	doc.RemoveNode(doc.Nodes[0])
+	doc.RemoveNode(doc.nodes[0])
 
 	assert.Equal(t, 0, doc.NumNodes())
 	assert.True(t, doc.IsEmpty())
@@ -107,20 +94,7 @@ func TestParsePlainText(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, TextNode, doc.Nodes[0].NodeType)
-}
-
-func TestReplaceHead(t *testing.T) {
-	doc, err := getDoc("<html><head /></html>")
-	assert.NoError(t, err)
-
-	node := newNode("a1")
-	assert.NotNil(t, doc.Head())
-
-	// head is not direct descendant of head
-	assert.False(t, doc.ReplaceNode(doc.Head(), node))
-	assert.NotNil(t, doc.Head())
-	assert.NotEqual(t, node, doc.Head())
+	assert.Equal(t, TextNode, doc.nodes[0].NodeType)
 }
 
 func TestDocReplaceNode(t *testing.T) {
@@ -134,9 +108,9 @@ func TestDocReplaceNode(t *testing.T) {
 	assert.False(t, doc.ReplaceNode(node, nil))
 	assert.False(t, doc.ReplaceNode(node, node))
 
-	assert.Equal(t, "html", doc.Nodes[0].NodeName())
-	assert.True(t, doc.ReplaceNode(doc.Nodes[0], node))
-	assert.Equal(t, "a1", doc.Nodes[0].NodeName())
+	assert.Equal(t, "html", doc.nodes[0].NodeName())
+	assert.True(t, doc.ReplaceNode(doc.nodes[0], node))
+	assert.Equal(t, "a1", doc.nodes[0].NodeName())
 }
 
 func TestDocGetElementsByName(t *testing.T) {

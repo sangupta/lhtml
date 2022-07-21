@@ -18,7 +18,7 @@ package lhtml
 // standard ones.
 //
 type HtmlElements struct {
-	Nodes []*HtmlNode // list of nodes at the top level
+	nodes []*HtmlNode // list of nodes at the top level
 }
 
 //
@@ -26,28 +26,34 @@ type HtmlElements struct {
 // This has no nodes defined and is totally empty. It is
 // used to initialize the internal structure.
 //
-func NewHtmlDocument() *HtmlElements {
+func newHtmlElements() *HtmlElements {
 	return &HtmlElements{
-		Nodes: make([]*HtmlNode, 0),
+		nodes: make([]*HtmlNode, 0),
+	}
+}
+
+func (elements *HtmlElements) AsHtmlDocument() *HtmlDocument {
+	return &HtmlDocument{
+		HtmlElements: *elements,
 	}
 }
 
 //----- basic property accessors
 
-func (document *HtmlElements) NumNodes() int {
-	if document.Nodes == nil {
+func (elements *HtmlElements) NumNodes() int {
+	if elements.nodes == nil {
 		return 0
 	}
 
-	return len(document.Nodes)
+	return len(elements.nodes)
 }
 
 //
 // Check if this document is empty or not. A document is considered
 // empty if it has no child node.
 //
-func (document *HtmlElements) IsEmpty() bool {
-	if len(document.Nodes) == 0 {
+func (elements *HtmlElements) IsEmpty() bool {
+	if len(elements.nodes) == 0 {
 		return true
 	}
 
@@ -56,62 +62,30 @@ func (document *HtmlElements) IsEmpty() bool {
 
 //----- Get various dedicated nodes
 
-func (document *HtmlElements) Head() *HtmlNode {
-	elements := document.GetElementsByName("head")
-	if elements == nil || elements.NumNodes() == 0 {
+func (elements *HtmlElements) FirstNode() *HtmlNode {
+	if elements.NumNodes() == 0 {
 		return nil
 	}
 
-	return elements.Nodes[0]
+	return elements.nodes[0]
 }
 
-func (document *HtmlElements) Body() *HtmlNode {
-	elements := document.GetElementsByName("body")
-	if elements == nil || elements.NumNodes() == 0 {
-		return nil
-	}
-
-	return elements.Nodes[0]
-}
-
-func (doc *HtmlElements) GetDocType() *HtmlNode {
-	if doc.IsEmpty() {
-		return nil
-	}
-
-	for _, node := range doc.Nodes {
-		if node.NodeType == DoctypeNode {
-			return node
-		}
-	}
-
-	return nil
-}
-
-func (document *HtmlElements) FirstNode() *HtmlNode {
-	if document.NumNodes() == 0 {
-		return nil
-	}
-
-	return document.Nodes[0]
-}
-
-func (document *HtmlElements) LastNode() *HtmlNode {
-	num := document.NumNodes()
+func (elements *HtmlElements) LastNode() *HtmlNode {
+	num := elements.NumNodes()
 	if num == 0 {
 		return nil
 	}
 
-	return document.Nodes[num-1]
+	return elements.nodes[num-1]
 }
 
-func (document *HtmlElements) GetNode(index int) *HtmlNode {
-	num := document.NumNodes()
+func (elements *HtmlElements) GetNode(index int) *HtmlNode {
+	num := elements.NumNodes()
 	if index < 0 || index >= num {
 		return nil
 	}
 
-	return document.Nodes[num]
+	return elements.nodes[num]
 }
 
 //----- FIND methods
@@ -123,13 +97,13 @@ func (document *HtmlElements) GetNode(index int) *HtmlNode {
 // Returns an instance of `HtmlDocument` which contains all the
 // selected nodes.
 //
-func (doc *HtmlElements) GetElementsByName(name string) *HtmlElements {
-	if doc.IsEmpty() {
+func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
+	if elements.IsEmpty() {
 		return nil
 	}
 
-	result := NewHtmlDocument()
-	for _, child := range doc.Nodes {
+	result := newHtmlElements()
+	for _, child := range elements.nodes {
 		child.getElementsByName(name, result)
 	}
 
@@ -142,16 +116,16 @@ func (doc *HtmlElements) GetElementsByName(name string) *HtmlElements {
 //
 // Returns `HtmlNode` instance if found, `nil` otherwise
 //
-func (doc *HtmlElements) GetElementById(id string) *HtmlNode {
+func (elements *HtmlElements) GetElementById(id string) *HtmlNode {
 	if id == "" {
 		return nil
 	}
 
-	if doc.IsEmpty() {
+	if elements.IsEmpty() {
 		return nil
 	}
 
-	for _, child := range doc.Nodes {
+	for _, child := range elements.nodes {
 		found := child.GetElementById(id)
 		if found != nil {
 			return found
@@ -163,27 +137,27 @@ func (doc *HtmlElements) GetElementById(id string) *HtmlNode {
 
 //----- Manipulation methods
 
-func (document *HtmlElements) InsertFirst(node *HtmlNode) {
-	document.Nodes = append([]*HtmlNode{node}, document.Nodes...)
+func (elements *HtmlElements) InsertFirst(node *HtmlNode) {
+	elements.nodes = append([]*HtmlNode{node}, elements.nodes...)
 }
 
 //
 // Append the given node to the list of nodes in this document.
 //
-func (document *HtmlElements) appendNode(node *HtmlNode) {
-	node.document = document
-	document.Nodes = append(document.Nodes, node)
+func (elements *HtmlElements) appendNode(node *HtmlNode) {
+	node.document = elements
+	elements.nodes = append(elements.nodes, node)
 }
 
 //
 // Remove all nodes from this document.
 //
-func (doc *HtmlElements) RemoveAllNodes() {
-	if doc.IsEmpty() {
+func (elements *HtmlElements) RemoveAllNodes() {
+	if elements.IsEmpty() {
 		return
 	}
 
-	doc.Nodes = make([]*HtmlNode, 0)
+	elements.nodes = make([]*HtmlNode, 0)
 }
 
 //
@@ -192,15 +166,15 @@ func (doc *HtmlElements) RemoveAllNodes() {
 // Returns `true` if the node was actually removed, `false`
 // otherwise
 //
-func (doc *HtmlElements) RemoveNode(node *HtmlNode) bool {
-	if doc.IsEmpty() {
+func (elements *HtmlElements) RemoveNode(node *HtmlNode) bool {
+	if elements.IsEmpty() {
 		return false
 	}
 
-	for index, child := range doc.Nodes {
+	for index, child := range elements.nodes {
 		if child == node {
 			node.detach()
-			doc.Nodes = append(doc.Nodes[:index], doc.Nodes[index+1:]...)
+			elements.nodes = append(elements.nodes[:index], elements.nodes[index+1:]...)
 			return true
 		}
 	}
@@ -215,7 +189,7 @@ func (doc *HtmlElements) RemoveNode(node *HtmlNode) bool {
 // Returns `true` if the node was actually replaced, `false`
 // otherwise
 //
-func (doc *HtmlElements) ReplaceNode(original *HtmlNode, replacement *HtmlNode) bool {
+func (elements *HtmlElements) ReplaceNode(original *HtmlNode, replacement *HtmlNode) bool {
 	if original == nil {
 		return false
 	}
@@ -224,18 +198,18 @@ func (doc *HtmlElements) ReplaceNode(original *HtmlNode, replacement *HtmlNode) 
 		return false
 	}
 
-	if doc.IsEmpty() {
+	if elements.IsEmpty() {
 		return false
 	}
 
-	for index, child := range doc.Nodes {
+	for index, child := range elements.nodes {
 		if child == original {
-			doc.Nodes[index] = replacement
+			elements.nodes[index] = replacement
 
 			// detach & attach
 			original.detach()
 			replacement._parent = nil
-			replacement.document = doc
+			replacement.document = elements
 
 			// all done
 			return true
@@ -252,7 +226,7 @@ func (doc *HtmlElements) ReplaceNode(original *HtmlNode, replacement *HtmlNode) 
 // relationship, and add to list of direct child nodes of this document
 // if there is nothing on the stack
 //
-func (document *HtmlElements) addNodeToStack(node *HtmlNode, stack *nodeStack) {
+func (elements *HtmlElements) addNodeToStack(node *HtmlNode, stack *nodeStack) {
 	// push this node on to the stack (and optionally document) itself
 	if !stack.isEmpty() {
 		// stack already has something so let's set parent-child relationship
@@ -262,7 +236,7 @@ func (document *HtmlElements) addNodeToStack(node *HtmlNode, stack *nodeStack) {
 	} else {
 		// stack is empty, as this is top-most node
 		// we will add it to document
-		document.appendNode(node)
+		elements.appendNode(node)
 	}
 
 	// push this node to stack

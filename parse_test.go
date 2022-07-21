@@ -22,7 +22,7 @@ func TestSimplestHtml(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 }
 
 func TestOnlyString(t *testing.T) {
@@ -30,8 +30,8 @@ func TestOnlyString(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, TextNode, doc.Nodes[0].NodeType)
-	assert.Equal(t, "Hello World", doc.Nodes[0].Data)
+	assert.Equal(t, TextNode, doc.nodes[0].NodeType)
+	assert.Equal(t, "Hello World", doc.nodes[0].Data)
 }
 
 func TestHead(t *testing.T) {
@@ -39,9 +39,9 @@ func TestHead(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
-	assert.Equal(t, doc.Nodes[0].Children[0], doc.Head())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
+	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
 }
 
 func TestHeadWithError(t *testing.T) {
@@ -49,15 +49,15 @@ func TestHeadWithError(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 2, doc.Nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.Nodes[0].Children[0], doc.Head())
+	assert.Equal(t, 2, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
 
 	// no head
 	doc, err = getDoc("<html></html>")
 	assert.NoError(t, err)
-	assert.Nil(t, doc.Head())
+	assert.Nil(t, doc.AsHtmlDocument().Head())
 	assert.Equal(t, 0, doc.GetElementsByName("head").NumNodes())
 }
 
@@ -66,14 +66,14 @@ func TestBody(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.NumNodes())
-	assert.Equal(t, 1, doc.Nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.Nodes[0].Children[0].NumChildren())
-	assert.Equal(t, doc.Nodes[0].Children[0], doc.Body())
+	assert.Equal(t, 1, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
+	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Body())
 
 	// no body
 	doc, err = getDoc("<html></html>")
 	assert.NoError(t, err)
-	assert.Nil(t, doc.Body())
+	assert.Nil(t, doc.AsHtmlDocument().Body())
 	assert.Equal(t, 0, doc.GetElementsByName("body").NumNodes())
 }
 
@@ -82,7 +82,7 @@ func TestDoctype(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 2, doc.NumNodes())
-	assert.Equal(t, DoctypeNode, doc.Nodes[0].NodeType)
+	assert.Equal(t, DoctypeNode, doc.nodes[0].NodeType)
 }
 
 func TestComment(t *testing.T) {
@@ -90,9 +90,9 @@ func TestComment(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 3, doc.NumNodes())
-	assert.Equal(t, DoctypeNode, doc.Nodes[0].NodeType)
-	assert.Equal(t, CommentNode, doc.Nodes[2].NodeType)
-	assert.Equal(t, " this is a comment ", doc.Nodes[2].Data)
+	assert.Equal(t, DoctypeNode, doc.nodes[0].NodeType)
+	assert.Equal(t, CommentNode, doc.nodes[2].NodeType)
+	assert.Equal(t, " this is a comment ", doc.nodes[2].Data)
 }
 
 func TestEmptyText(t *testing.T) {

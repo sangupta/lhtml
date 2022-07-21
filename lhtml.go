@@ -64,7 +64,7 @@ func ParseHtml(reader io.Reader) (*HtmlElements, error) {
 //
 func ParseHtmlString(html string) (*HtmlElements, error) {
 	if len(html) == 0 {
-		return NewHtmlDocument(), nil
+		return newHtmlElements(), nil
 	}
 
 	reader := strings.NewReader(html)
