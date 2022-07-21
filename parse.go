@@ -100,7 +100,7 @@ func readElementNode(tokenizer *html.Tokenizer) *HtmlNode {
 	// when a tag starts, we read the tag name
 	tagName, hasAttributes := tokenizer.TagName()
 	node := HtmlNode{
-		TagName:       string(tagName),
+		_tagName:      string(tagName),
 		IsSelfClosing: false,
 		NodeType:      ElementNode,
 	}
@@ -198,7 +198,7 @@ func handleEndTagToken(document *HtmlElements, stack *nodeStack, tokenizer *html
 
 	// let's check what is at top
 	element := stack.peek()
-	if element.TagName == string(tagName) {
+	if element._tagName == string(tagName) {
 		// its the same tag, let's just pop and move ahead
 		stack.pop()
 

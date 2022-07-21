@@ -56,7 +56,7 @@ func (node *HtmlNode) Traverse(visitor HtmlNodeVisitor) bool {
 		return true
 	}
 
-	for _, child := range node.Children {
+	for _, child := range node._children {
 		shouldContinue := child.Traverse(visitor)
 		if !shouldContinue {
 			return false

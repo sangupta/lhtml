@@ -34,34 +34,34 @@ const (
 // property you are reading will contain a value or not.
 //
 type HtmlNode struct {
-	TagName       string
-	_parent       *HtmlNode `json:"-"`
-	Attributes    []*HtmlAttribute
-	Children      []*HtmlNode
-	IsSelfClosing bool
-	NodeType      HtmlNodeType
-	Data          string
-	document      *HtmlElements // the document node that this node belongs to
+	_tagName          string
+	_parent           *HtmlNode `json:"-"`
+	Attributes        []*HtmlAttribute
+	_children         []*HtmlNode
+	IsSelfClosing     bool
+	NodeType          HtmlNodeType
+	Data              string
+	_wrappingElements *HtmlElements // the document node that this node belongs to
 }
 
 func newNode(name string) *HtmlNode {
 	return &HtmlNode{
-		TagName: name,
+		_tagName: name,
 	}
 }
 
 //----- basic property accessors
 
 func (node *HtmlNode) NodeName() string {
-	return strings.TrimSpace(node.TagName)
+	return strings.TrimSpace(node._tagName)
 }
 
 func (node *HtmlNode) NumChildren() int {
-	if node.Children == nil {
+	if node._children == nil {
 		return 0
 	}
 
-	return len(node.Children)
+	return len(node._children)
 }
 
 func (node *HtmlNode) Parent() *HtmlNode {
@@ -73,15 +73,7 @@ func (node *HtmlNode) Parent() *HtmlNode {
 // or not.
 //
 func (node *HtmlNode) HasChildren() bool {
-	if node.Children == nil || len(node.Children) == 0 {
-		return false
-	}
-
-	return true
-}
-
-func (node *HtmlNode) HasAttributes() bool {
-	if node.Attributes == nil || len(node.Attributes) == 0 {
+	if node._children == nil || len(node._children) == 0 {
 		return false
 	}
 
@@ -100,7 +92,7 @@ func (node *HtmlNode) getElementsByName(name string, elements *HtmlElements) {
 	name = strings.TrimSpace(name)
 	name = strings.ToLower(name)
 
-	if node.TagName == name {
+	if node._tagName == name {
 		elements.appendNode(node)
 	}
 
@@ -108,7 +100,7 @@ func (node *HtmlNode) getElementsByName(name string, elements *HtmlElements) {
 		return
 	}
 
-	for _, child := range node.Children {
+	for _, child := range node._children {
 		child.getElementsByName(name, elements)
 	}
 }
@@ -127,7 +119,7 @@ func (node *HtmlNode) GetElementById(id string) *HtmlNode {
 	if !node.HasChildren() {
 		return nil
 	}
-	for _, child := range node.Children {
+	for _, child := range node._children {
 		found := child.GetElementById(id)
 		if found != nil {
 			return found
@@ -137,11 +129,72 @@ func (node *HtmlNode) GetElementById(id string) *HtmlNode {
 	return nil
 }
 
+func (node *HtmlNode) GetChild(index int) *HtmlNode {
+	num := node.NumChildren()
+	if index < 0 || index >= num {
+		return nil
+	}
+
+	return node._children[index]
+}
+
+func (node *HtmlNode) GetBefore(child *HtmlNode) *HtmlNode {
+	if child == nil {
+		return nil
+	}
+
+	if !node.HasChildren() {
+		return nil
+	}
+
+	for index, kid := range node._children {
+		if kid == child {
+			return node.GetChild(index - 1)
+		}
+	}
+
+	if node._wrappingElements != nil {
+		node._wrappingElements.GetBefore(node)
+	}
+
+	return nil
+}
+
+func (node *HtmlNode) GetAfter(child *HtmlNode) *HtmlNode {
+	if child == nil {
+		return nil
+	}
+
+	if !node.HasChildren() {
+		return nil
+	}
+
+	for index, kid := range node._children {
+		if kid == child {
+			return node.GetChild(index + 1)
+		}
+	}
+
+	if node._wrappingElements != nil {
+		node._wrappingElements.GetAfter(node)
+	}
+
+	return nil
+}
+
 func (node *HtmlNode) PrevSibling() *HtmlNode {
+	if node._parent != nil {
+		return node._parent.GetAfter(node)
+	}
+
 	return nil
 }
 
 func (node *HtmlNode) NextSibling() *HtmlNode {
+	if node._parent != nil {
+		return node._parent.GetAfter(node)
+	}
+
 	return nil
 }
 
@@ -155,7 +208,7 @@ func (node *HtmlNode) RemoveAllChildren() {
 		return
 	}
 
-	node.Children = make([]*HtmlNode, 0)
+	node._children = make([]*HtmlNode, 0)
 }
 
 //
@@ -164,13 +217,13 @@ func (node *HtmlNode) RemoveAllChildren() {
 // Returns `true` if the node was actually removed, `false`
 // otherwise
 //
-func (node *HtmlNode) RemoveMe() bool {
+func (node *HtmlNode) Remove() bool {
 	if node._parent == nil {
-		if node.document == nil {
+		if node._wrappingElements == nil {
 			return false
 		}
 
-		return node.document.Remove(node)
+		return node._wrappingElements.Remove(node)
 	}
 
 	return node._parent.RemoveChild(node)
@@ -187,10 +240,10 @@ func (node *HtmlNode) RemoveChild(child *HtmlNode) bool {
 		return false
 	}
 
-	for index, c := range node.Children {
+	for index, c := range node._children {
 		if c == child {
 			child.detach()
-			node.Children = append(node.Children[:index], node.Children[index+1:]...)
+			node._children = append(node._children[:index], node._children[index+1:]...)
 			return true
 		}
 	}
@@ -199,19 +252,19 @@ func (node *HtmlNode) RemoveChild(child *HtmlNode) bool {
 }
 
 //
-// Replace the given node with provided replacement by ensuring
+// ReplaceWith the given node with provided replacement by ensuring
 // whether it has a parent, or is directly attached to document.
 //
 // Returns `true` if the node was actually replaced, `false`
 // otherwise
 //
-func (node *HtmlNode) ReplaceMe(replacement *HtmlNode) bool {
+func (node *HtmlNode) ReplaceWith(replacement *HtmlNode) bool {
 	if replacement == nil {
 		return false
 	}
 
 	if node._parent == nil {
-		return node.document.Replace(node, replacement)
+		return node._wrappingElements.Replace(node, replacement)
 	}
 
 	return node._parent.ReplaceChild(node, replacement)
@@ -236,10 +289,10 @@ func (node *HtmlNode) ReplaceChild(original *HtmlNode, replacement *HtmlNode) bo
 		return false
 	}
 
-	for index, child := range node.Children {
+	for index, child := range node._children {
 		if child == original {
 			original.detach()
-			node.Children[index] = replacement
+			node._children[index] = replacement
 			return true
 		}
 	}
@@ -271,14 +324,14 @@ func (node *HtmlNode) addAttribute(key string, value string) {
 // Add a child node to this node.
 //
 func (node *HtmlNode) addChild(child *HtmlNode) {
-	if len(node.Children) == 0 {
-		node.Children = make([]*HtmlNode, 0)
+	if len(node._children) == 0 {
+		node._children = make([]*HtmlNode, 0)
 	}
 
-	node.Children = append(node.Children, child)
+	node._children = append(node._children, child)
 }
 
 func (node *HtmlNode) detach() {
 	node._parent = nil
-	node.document = nil
+	node._wrappingElements = nil
 }

@@ -57,7 +57,7 @@ func TestNilVisitorNode(t *testing.T) {
 	doc, err := getVisitorDoc()
 	assert.NoError(t, err)
 
-	assert.False(t, doc.nodes[0].Children[0].Traverse(nil))
+	assert.False(t, doc.nodes[0]._children[0].Traverse(nil))
 }
 
 func TestTraverseDoc(t *testing.T) {
@@ -91,7 +91,7 @@ func TestTraverseNode(t *testing.T) {
 		return true
 	}
 
-	doc.nodes[0].Children[0].Traverse(visitor)
+	doc.nodes[0]._children[0].Traverse(visitor)
 
 	assert.Equal(t, " head title", s)
 }

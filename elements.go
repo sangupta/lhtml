@@ -90,6 +90,42 @@ func (elements *HtmlElements) Get(index int) *HtmlNode {
 
 //----- FIND methods
 
+func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
+	if child == nil {
+		return nil
+	}
+
+	if elements.Length() == 0 {
+		return nil
+	}
+
+	for index, node := range elements.nodes {
+		if node == child {
+			return elements.Get(index - 1)
+		}
+	}
+
+	return nil
+}
+
+func (elements *HtmlElements) GetAfter(child *HtmlNode) *HtmlNode {
+	if child == nil {
+		return nil
+	}
+
+	if elements.Length() == 0 {
+		return nil
+	}
+
+	for index, node := range elements.nodes {
+		if node == child {
+			return elements.Get(index + 1)
+		}
+	}
+
+	return nil
+}
+
 //
 // Find and return all elements in this document that match
 // the given name/tag name/node name.
@@ -205,7 +241,7 @@ func (elements *HtmlElements) Replace(original *HtmlNode, replacement *HtmlNode)
 			// detach & attach
 			original.detach()
 			replacement._parent = nil
-			replacement.document = elements
+			replacement._wrappingElements = elements
 
 			// all done
 			return true
@@ -243,6 +279,6 @@ func (elements *HtmlElements) addNodeToStack(node *HtmlNode, stack *nodeStack) {
 // Append the given node to the list of nodes in this document.
 //
 func (elements *HtmlElements) appendNode(node *HtmlNode) {
-	node.document = elements
+	node._wrappingElements = elements
 	elements.nodes = append(elements.nodes, node)
 }

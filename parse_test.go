@@ -40,8 +40,8 @@ func TestHead(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
-	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
+	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
 }
 
 func TestHeadWithError(t *testing.T) {
@@ -50,9 +50,9 @@ func TestHeadWithError(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0]._children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
 
 	// no head
 	doc, err = getDoc("<html></html>")
@@ -67,8 +67,8 @@ func TestBody(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
-	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Body())
+	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
+	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Body())
 
 	// no body
 	doc, err = getDoc("<html></html>")

@@ -40,9 +40,9 @@ func TestDocRemoveAll(t *testing.T) {
 
 	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0]._children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
 
 	// remove all on doc
 	doc.Empty()
@@ -64,9 +64,9 @@ func TestDocRemoveNode(t *testing.T) {
 
 	assert.Equal(t, 1, doc.Length())
 	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0].Children[1].NumChildren())
-	assert.Equal(t, doc.nodes[0].Children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
+	assert.Equal(t, 1, doc.nodes[0]._children[1].NumChildren())
+	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
 
 	doc.Remove(doc.nodes[0])
 

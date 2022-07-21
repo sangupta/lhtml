@@ -21,6 +21,14 @@ type HtmlAttribute struct {
 	Value string // the value of this attribute
 }
 
+func (node *HtmlNode) HasAttributes() bool {
+	if node.Attributes == nil || len(node.Attributes) == 0 {
+		return false
+	}
+
+	return true
+}
+
 //
 // Check if the node has an attribute with the given name.
 //

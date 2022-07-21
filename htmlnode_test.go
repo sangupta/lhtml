@@ -51,16 +51,16 @@ func TestNodeRemoveMe(t *testing.T) {
 	head := doc.AsHtmlDocument().Head()
 	// try removing head
 	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.True(t, head.RemoveMe())
+	assert.True(t, head.Remove())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// removing again?
-	assert.False(t, head.RemoveMe())
+	assert.False(t, head.Remove())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// remove html?
 	assert.Equal(t, 1, doc.Length())
-	assert.True(t, doc.nodes[0].RemoveMe())
+	assert.True(t, doc.nodes[0].Remove())
 	assert.Equal(t, 0, doc.Length())
 }
 
@@ -77,7 +77,7 @@ func TestNodeRemoveChild(t *testing.T) {
 
 	// direct child
 	assert.Equal(t, 1, head.NumChildren())
-	assert.True(t, head.RemoveChild(head.Children[0]))
+	assert.True(t, head.RemoveChild(head._children[0]))
 	assert.Equal(t, 0, head.NumChildren())
 
 	// another one
@@ -95,11 +95,11 @@ func TestNodeReplaceMe(t *testing.T) {
 	doc, err := getRemoveDoc()
 	assert.NoError(t, err)
 
-	assert.False(t, doc.nodes[0].ReplaceMe(nil))
+	assert.False(t, doc.nodes[0].ReplaceWith(nil))
 
 	node := newNode("a1")
 	assert.Equal(t, "html", doc.nodes[0].NodeName())
-	assert.True(t, doc.nodes[0].ReplaceMe(node))
+	assert.True(t, doc.nodes[0].ReplaceWith(node))
 	assert.Equal(t, "a1", doc.nodes[0].NodeName())
 }
 
@@ -109,11 +109,11 @@ func TestNodeReplaceChild(t *testing.T) {
 
 	node := newNode("a1")
 	assert.False(t, doc.nodes[0].ReplaceChild(nil, node))
-	assert.False(t, doc.nodes[0].ReplaceChild(doc.nodes[0].Children[0], nil))
+	assert.False(t, doc.nodes[0].ReplaceChild(doc.nodes[0]._children[0], nil))
 
-	assert.Equal(t, "head", doc.nodes[0].Children[0].NodeName())
-	assert.True(t, doc.nodes[0].ReplaceChild(doc.nodes[0].Children[0], node))
-	assert.Equal(t, "a1", doc.nodes[0].Children[0].NodeName())
+	assert.Equal(t, "head", doc.nodes[0]._children[0].NodeName())
+	assert.True(t, doc.nodes[0].ReplaceChild(doc.nodes[0]._children[0], node))
+	assert.Equal(t, "a1", doc.nodes[0]._children[0].NodeName())
 
 	// when node has no child
 	doc, err = getDoc("<html></html>")
