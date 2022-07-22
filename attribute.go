@@ -21,8 +21,16 @@ type HtmlAttribute struct {
 	Value string // the value of this attribute
 }
 
-func (node *HtmlNode) HasAttributes() bool {
-	if node.Attributes == nil || len(node.Attributes) == 0 {
+func (node *HtmlNode) NumAttributes() int {
+	if node.Attributes == nil {
+		return 0
+	}
+
+	return len(node.Attributes)
+}
+
+func (node *HtmlNode) ContainsAttributes() bool {
+	if node.NumAttributes() <= 0 {
 		return false
 	}
 
@@ -46,7 +54,7 @@ func (node *HtmlNode) HasAttribute(key string) bool {
 // Returns an `HtmlNode` if found, `nil` otherwise
 //
 func (node *HtmlNode) GetAttribute(key string) *HtmlAttribute {
-	if !node.HasAttributes() {
+	if !node.ContainsAttributes() {
 		return nil
 	}
 
@@ -60,7 +68,7 @@ func (node *HtmlNode) GetAttribute(key string) *HtmlAttribute {
 }
 
 func (node *HtmlNode) RemoveAttribute(key string) bool {
-	if !node.HasAttributes() {
+	if !node.ContainsAttributes() {
 		return false
 	}
 
@@ -82,7 +90,7 @@ func (node *HtmlNode) RemoveAttribute(key string) bool {
 }
 
 func (node *HtmlNode) SetAttribute(key string, value string) bool {
-	if node.HasAttributes() {
+	if node.ContainsAttributes() {
 		// do we have the attribute with matching name?
 		for _, attr := range node.Attributes {
 			if strings.EqualFold(attr.Name, key) {
@@ -121,7 +129,7 @@ func (node *HtmlNode) SetAttribute(key string, value string) bool {
 // Returns a slice of `HtmlNode` if found, `nil` otherwise
 //
 func (node *HtmlNode) GetAttributes(key string) []*HtmlAttribute {
-	if !node.HasAttributes() {
+	if !node.ContainsAttributes() {
 		return nil
 	}
 
@@ -141,7 +149,7 @@ func (node *HtmlNode) GetAttributes(key string) []*HtmlAttribute {
 // Returns either a `HtmlAttribute` instance, `nil` otherwise
 //
 func (node *HtmlNode) GetAttributeWithValue(key string, value string) *HtmlAttribute {
-	if !node.HasAttributes() {
+	if !node.ContainsAttributes() {
 		return nil
 	}
 

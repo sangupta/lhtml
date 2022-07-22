@@ -11,7 +11,9 @@
 
 package lhtml
 
-import "strings"
+import (
+	"strings"
+)
 
 //
 // Enum to define the NodeType
@@ -217,7 +219,7 @@ func (node *HtmlNode) RemoveAllChildren() {
 // Returns `true` if the node was actually removed, `false`
 // otherwise
 //
-func (node *HtmlNode) Remove() bool {
+func (node *HtmlNode) RemoveMe() bool {
 	if node._parent == nil {
 		if node._wrappingElements == nil {
 			return false
@@ -252,13 +254,13 @@ func (node *HtmlNode) RemoveChild(child *HtmlNode) bool {
 }
 
 //
-// ReplaceWith the given node with provided replacement by ensuring
+// ReplaceMe the given node with provided replacement by ensuring
 // whether it has a parent, or is directly attached to document.
 //
 // Returns `true` if the node was actually replaced, `false`
 // otherwise
 //
-func (node *HtmlNode) ReplaceWith(replacement *HtmlNode) bool {
+func (node *HtmlNode) ReplaceMe(replacement *HtmlNode) bool {
 	if replacement == nil {
 		return false
 	}
@@ -295,6 +297,96 @@ func (node *HtmlNode) ReplaceChild(original *HtmlNode, replacement *HtmlNode) bo
 			node._children[index] = replacement
 			return true
 		}
+	}
+
+	return false
+}
+
+func (node *HtmlNode) InsertChildAt(index int, additional *HtmlNode) bool {
+	// first addition
+	if index <= 0 {
+		node._children = append([]*HtmlNode{additional}, node._children...)
+		return true
+	}
+
+	// falls at the end
+	num := len(node._children)
+	if index >= num {
+		node._children = append(node._children, additional)
+		return true
+	}
+
+	// falls in between
+	prefix := node._children[:index]
+	suffix := node._children[index:]
+	node._children = append(prefix, additional)
+	node._children = append(node._children, suffix...)
+	return true
+}
+
+//
+// Insert a node before given child
+//
+func (node *HtmlNode) InsertBeforeChild(child *HtmlNode, additional *HtmlNode) bool {
+	if !node.HasChildren() {
+		return false
+	}
+
+	for index, kid := range node._children {
+		if kid == child {
+			newIndex := index - 1
+			if newIndex == -1 {
+				newIndex = 0
+			}
+			return node.InsertChildAt(newIndex, additional)
+		}
+	}
+
+	return false
+}
+
+//
+// Insert a node after given child.
+//
+func (node *HtmlNode) InsertAfterChild(child *HtmlNode, additional *HtmlNode) bool {
+	if !node.HasChildren() {
+		return false
+	}
+
+	for index, kid := range node._children {
+		if kid == child {
+			return node.InsertChildAt(index+1, additional)
+		}
+	}
+
+	return false
+}
+
+//
+// Insert a node before me.
+//
+func (node *HtmlNode) InsertBeforeMe(additional *HtmlNode) bool {
+	if node._parent != nil {
+		return node._parent.InsertBeforeChild(node, additional)
+	}
+
+	if node._wrappingElements != nil {
+		return node._wrappingElements.InsertBefore(node, additional)
+	}
+
+	return false
+}
+
+//
+// Insert a node after me.
+//
+func (node *HtmlNode) InsertAfterMe(additional *HtmlNode) bool {
+	if node._parent != nil {
+		return node._parent.InsertAfterChild(node, additional)
+	}
+
+	if node._wrappingElements != nil {
+		return node._wrappingElements.InsertAfter(node, additional)
 	}
 
 	return false

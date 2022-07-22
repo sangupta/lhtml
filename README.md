@@ -18,6 +18,7 @@ which want to process their own custom tags and attributes.
 * [API](#api)
 * [Usage](#usage)
 * [Examples](#examples)
+* [Hacking](#hacking)
 * [Changelog](#changelog)
 * [Related Projects](#related-projects)
 * [License](#license)
@@ -156,6 +157,16 @@ func test() {
     fmt.Println(called)     // 7 (5 element nodes, 2 text nodes)
 }
 ```
+
+# Hacking
+
+* To build the Go docs locally:
+  - `$ godoc -http=:6060`
+  - Open http://localhost:6060/pkg/github.com/sangupta/lhtml
+
+* To run all tests along with code coverage report
+  - `$ go test ./... -v -coverprofile coverage.out`
+  - `$ go tool cover -html=coverage.out`
 
 # Changelog
 

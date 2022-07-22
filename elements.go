@@ -11,6 +11,8 @@
 
 package lhtml
 
+import "strings"
+
 //
 // The structure that holds a group of HTML elements.
 // This is similar to `HtmlDocument` except that it can
@@ -153,15 +155,39 @@ func (elements *HtmlElements) GetAfter(child *HtmlNode) *HtmlNode {
 }
 
 //
-// Find and return all elements in this document that match
-// the given name/tag name/node name.
+// Find and return all elements in this list's direct children
+// that match the given name/tag name/node name.
+// Returns an instance of `HtmlElements` which contains all the
+// selected nodes. If no match is found, an empty list is returned.
+// This method never returns a `nil`.
+//
+func (elements *HtmlElements) GetChildrenByName(name string) *HtmlElements {
+	if elements.IsEmpty() {
+		return NewHtmlElements()
+	}
+
+	result := NewHtmlElements()
+	for _, child := range elements.nodes {
+		if strings.EqualFold(child.NodeName(), name) {
+			result.nodes = append(result.nodes, child)
+		}
+	}
+
+	return result
+}
+
+//
+// Find and return all elements in this list of elements and its
+// children that match the given name/tag name/node name. This function
+// searches the entire tree for a match.
 //
 // Returns an instance of `HtmlElements` which contains all the
-// selected nodes.
+// selected nodes. If no match is found, an empty list is returned.
+// This method never returns a `nil`.
 //
 func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
 	if elements.IsEmpty() {
-		return nil
+		return NewHtmlElements()
 	}
 
 	result := NewHtmlElements()
@@ -200,46 +226,132 @@ func (elements *HtmlElements) GetElementById(id string) *HtmlNode {
 //----- Manipulation methods
 
 //
-// Insert the given node as the first node in the list
+// Insert a node at given index.
+// If index is less than or equal to zero, the node is inserted as first element.
+// If index is equal or greater than length, the node is inserted as last element.
+//
+func (elements *HtmlElements) InsertAt(index int, newNode *HtmlNode) {
+	// attach the node
+	newNode._parent = nil
+	newNode._wrappingElements = elements
+
+	// first addition
+	if index <= 0 {
+		elements.nodes = append([]*HtmlNode{newNode}, elements.nodes...)
+		return
+	}
+
+	// falls at the end
+	num := len(elements.nodes)
+	if index >= num {
+		elements.nodes = append(elements.nodes, newNode)
+		return
+	}
+
+	// falls in between
+	prefix := elements.nodes[:index]
+	suffix := elements.nodes[index:]
+	elements.nodes = append(prefix, newNode)
+	elements.nodes = append(elements.nodes, suffix...)
+	return
+}
+
+//
+// Insert a newNode before another childNode.
+// Returns `true` if the newNode was added successfully.
+// Returns `false` if there are no elements in this instance
+// or the child instance cannot be found.
+//
+func (elements *HtmlElements) InsertBefore(childNode *HtmlNode, newNode *HtmlNode) bool {
+	if !childNode.HasChildren() {
+		return false
+	}
+
+	for index, child := range elements.nodes {
+		if child == childNode {
+			newIndex := index - 1
+			if newIndex == -1 {
+				newIndex = 0
+			}
+
+			elements.InsertAt(newIndex, newNode)
+			return true
+		}
+	}
+
+	return false
+}
+
+//
+// Insert a newNode after given childNode.
+// Returns `true` if the newNode was added successfully.
+// Returns `false` if there are no elements in this instance
+// or the child instance cannot be found.
+//
+func (elements *HtmlElements) InsertAfter(childNode *HtmlNode, newNode *HtmlNode) bool {
+	if !childNode.HasChildren() {
+		return false
+	}
+
+	for index, kid := range elements.nodes {
+		if kid == childNode {
+			elements.InsertAt(index+1, newNode)
+			return true
+		}
+	}
+
+	return false
+}
+
+//
+// Insert the given newNode as the first node in the list
 // of elements.
 //
-func (elements *HtmlElements) InsertFirst(node *HtmlNode) {
-	elements.nodes = append([]*HtmlNode{node}, elements.nodes...)
+func (elements *HtmlElements) InsertFirst(newNode *HtmlNode) {
+	elements.InsertAt(-1, newNode)
 }
 
 //
 // Insert the given node as the last node in the list
 // of elements.
 //
-func (elements *HtmlElements) InsertLast(node *HtmlNode) {
-	elements.nodes = append(elements.nodes, node)
+func (elements *HtmlElements) InsertLast(newNode *HtmlNode) {
+	elements.InsertAt(elements.Length()+1, newNode)
 }
 
 //
-// Remove all nodes from this document.
+// Remove all nodes from this list of elements. All removed
+// nodes are detached.
 //
 func (elements *HtmlElements) Empty() {
 	if elements.IsEmpty() {
 		return
 	}
 
+	// detach nodes
+	for _, node := range elements.nodes {
+		node._parent = nil
+		node._wrappingElements = nil
+	}
+
+	// create new slice
 	elements.nodes = make([]*HtmlNode, 0)
 }
 
 //
-// Remove given node from document if it is a direct child.
+// Remove given childNode from document if it is a direct child.
 //
-// Returns `true` if the node was actually removed, `false`
-// otherwise
+// Returns `true` if the childNode was actually removed, `false`
+// otherwise. The removed childNode is detached.
 //
-func (elements *HtmlElements) Remove(node *HtmlNode) bool {
+func (elements *HtmlElements) Remove(childNode *HtmlNode) bool {
 	if elements.IsEmpty() {
 		return false
 	}
 
 	for index, child := range elements.nodes {
-		if child == node {
-			node.detach()
+		if child == childNode {
+			childNode.detach()
 			elements.nodes = append(elements.nodes[:index], elements.nodes[index+1:]...)
 			return true
 		}
@@ -249,18 +361,17 @@ func (elements *HtmlElements) Remove(node *HtmlNode) bool {
 }
 
 //
-// Replace the given node with provided replacement
-// it it exists in the list of nodes
-//
+// Replace the given childNode with provided newNode replacement
+// if it exists in the list of nodes within this element.
 // Returns `true` if the node was actually replaced, `false`
-// otherwise
+// otherwise. The removed childNode is detached.
 //
-func (elements *HtmlElements) Replace(original *HtmlNode, replacement *HtmlNode) bool {
-	if original == nil {
+func (elements *HtmlElements) Replace(childNode *HtmlNode, newNode *HtmlNode) bool {
+	if childNode == nil {
 		return false
 	}
 
-	if replacement == nil {
+	if newNode == nil {
 		return false
 	}
 
@@ -269,13 +380,13 @@ func (elements *HtmlElements) Replace(original *HtmlNode, replacement *HtmlNode)
 	}
 
 	for index, child := range elements.nodes {
-		if child == original {
-			elements.nodes[index] = replacement
+		if child == childNode {
+			elements.nodes[index] = newNode
 
 			// detach & attach
-			original.detach()
-			replacement._parent = nil
-			replacement._wrappingElements = elements
+			childNode.detach()
+			newNode._parent = nil
+			newNode._wrappingElements = elements
 
 			// all done
 			return true

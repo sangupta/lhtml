@@ -51,16 +51,16 @@ func TestNodeRemoveMe(t *testing.T) {
 	head := doc.AsHtmlDocument().Head()
 	// try removing head
 	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.True(t, head.Remove())
+	assert.True(t, head.RemoveMe())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// removing again?
-	assert.False(t, head.Remove())
+	assert.False(t, head.RemoveMe())
 	assert.Equal(t, 1, doc.nodes[0].NumChildren())
 
 	// remove html?
 	assert.Equal(t, 1, doc.Length())
-	assert.True(t, doc.nodes[0].Remove())
+	assert.True(t, doc.nodes[0].RemoveMe())
 	assert.Equal(t, 0, doc.Length())
 }
 
@@ -95,11 +95,11 @@ func TestNodeReplaceMe(t *testing.T) {
 	doc, err := getRemoveDoc()
 	assert.NoError(t, err)
 
-	assert.False(t, doc.nodes[0].ReplaceWith(nil))
+	assert.False(t, doc.nodes[0].ReplaceMe(nil))
 
 	node := newNode("a1")
 	assert.Equal(t, "html", doc.nodes[0].NodeName())
-	assert.True(t, doc.nodes[0].ReplaceWith(node))
+	assert.True(t, doc.nodes[0].ReplaceMe(node))
 	assert.Equal(t, "a1", doc.nodes[0].NodeName())
 }
 

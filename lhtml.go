@@ -18,14 +18,14 @@ import (
 )
 
 type ParseOptions struct {
-	CaseSensitiveAttributes bool
-	AllowMultipleAttributes bool
+	CaseSensitiveAttributes             bool
+	AllowMultipleAttributesWithSameName bool
 }
 
 func getDefaultOptions() *ParseOptions {
 	return &ParseOptions{
-		CaseSensitiveAttributes: false,
-		AllowMultipleAttributes: false,
+		CaseSensitiveAttributes:             false,
+		AllowMultipleAttributesWithSameName: false,
 	}
 }
 
