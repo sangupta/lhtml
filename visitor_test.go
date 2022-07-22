@@ -12,22 +12,13 @@
 package lhtml
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func getVisitorDoc() (*HtmlElements, error) {
-	html := "<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>"
-	reader := strings.NewReader(html)
-	return ParseHtml(reader)
-}
-
 func TestEmptyDoc(t *testing.T) {
-	html := ""
-	reader := strings.NewReader(html)
-	doc, err := ParseHtml(reader)
+	doc, err := ParseHtmlString("")
 	assert.NoError(t, err)
 
 	s := ""
@@ -46,22 +37,23 @@ func TestEmptyDoc(t *testing.T) {
 	assert.Equal(t, 0, called)
 }
 
+// check if a `nil` visitor is passed.
 func TestNilVisitorDoc(t *testing.T) {
-	doc, err := getDoc("<html><head /></html>")
+	doc, err := ParseHtmlString("<html><head /></html>")
 	assert.NoError(t, err)
 
 	doc.Traverse(nil)
 }
 
 func TestNilVisitorNode(t *testing.T) {
-	doc, err := getVisitorDoc()
+	doc, err := ParseHtmlString("<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>")
 	assert.NoError(t, err)
 
 	assert.False(t, doc.nodes[0]._children[0].Traverse(nil))
 }
 
 func TestTraverseDoc(t *testing.T) {
-	doc, err := getVisitorDoc()
+	doc, err := ParseHtmlString("<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>")
 	assert.NoError(t, err)
 
 	s := ""
@@ -78,8 +70,9 @@ func TestTraverseDoc(t *testing.T) {
 	assert.Equal(t, " html head title body div", s)
 }
 
+// test traversal using a child node to start at.
 func TestTraverseNode(t *testing.T) {
-	doc, err := getVisitorDoc()
+	doc, err := ParseHtmlString("<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>")
 	assert.NoError(t, err)
 
 	s := ""
@@ -91,13 +84,14 @@ func TestTraverseNode(t *testing.T) {
 		return true
 	}
 
-	doc.nodes[0]._children[0].Traverse(visitor)
+	doc.First().First().Traverse(visitor)
 
 	assert.Equal(t, " head title", s)
 }
 
+// test traversal breaking at the document level
 func TestTraverseDocBreak(t *testing.T) {
-	doc, err := getVisitorDoc()
+	doc, err := ParseHtmlString("<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>")
 	assert.NoError(t, err)
 
 	s := ""
@@ -117,8 +111,9 @@ func TestTraverseDocBreak(t *testing.T) {
 	assert.Equal(t, " html", s)
 }
 
+// test traversal breaking at a certain node
 func TestTraverseNodeBreak(t *testing.T) {
-	doc, err := getVisitorDoc()
+	doc, err := ParseHtmlString("<html><head><title>Hello world</title></head><body><div>Hello world</div></body></html>")
 	assert.NoError(t, err)
 
 	s := ""
@@ -134,6 +129,5 @@ func TestTraverseNodeBreak(t *testing.T) {
 	}
 
 	doc.Traverse(visitor)
-
 	assert.Equal(t, " html head", s)
 }

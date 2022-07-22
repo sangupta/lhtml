@@ -144,6 +144,35 @@ func (node *HtmlNode) GetAttributes(key string) []*HtmlAttribute {
 }
 
 //
+// Function removes all duplicate attributes from the node.
+// The first available value is kept and other values are
+// dropped. The function returns `true` if the attributes
+// were modified (duplicates were removed), `false` otherwise.
+//
+func (node *HtmlNode) RemoveDuplicateAttributes() bool {
+	if !node.ContainsAttributes() {
+		return false
+	}
+
+	attributeMap := make(map[string]*HtmlAttribute, 0)
+	for _, attr := range node.Attributes {
+		attributeMap[attr.Name] = attr
+	}
+
+	if len(attributeMap) == len(node.Attributes) {
+		return false
+	}
+
+	result := make([]*HtmlAttribute, 0)
+	for _, value := range attributeMap {
+		result = append(result, value)
+	}
+
+	node.Attributes = result
+	return true
+}
+
+//
 // Find and return the `HtmlAttribute` which has the given name and value
 //
 // Returns either a `HtmlAttribute` instance, `nil` otherwise

@@ -84,6 +84,27 @@ func (node *HtmlNode) HasChildren() bool {
 
 //----- FIND methods
 
+func (node *HtmlNode) Get(index int) *HtmlNode {
+	if index < 0 {
+		return nil
+	}
+
+	num := len(node._children)
+	if index >= num {
+		return nil
+	}
+
+	return node._children[index]
+}
+
+func (node *HtmlNode) First() *HtmlNode {
+	return node.Get(0)
+}
+
+func (node *HtmlNode) Last() *HtmlNode {
+	return node.Get(node.NumChildren() - 1)
+}
+
 func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
 	elements := NewHtmlElements()
 	node.getElementsByName(name, elements)

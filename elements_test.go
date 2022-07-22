@@ -39,10 +39,10 @@ func TestDocRemoveAll(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, doc.Length())
-	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0]._children[1].NumChildren())
-	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 2, doc.First().NumChildren())
+	assert.Equal(t, 1, doc.First().First().NumChildren())
+	assert.Equal(t, 1, doc.First().First().NumChildren())
+	assert.Equal(t, doc.First().First(), doc.AsHtmlDocument().Head())
 
 	// remove all on doc
 	doc.Empty()
@@ -63,12 +63,12 @@ func TestDocRemoveNode(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, doc.Length())
-	assert.Equal(t, 2, doc.nodes[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0]._children[0].NumChildren())
-	assert.Equal(t, 1, doc.nodes[0]._children[1].NumChildren())
-	assert.Equal(t, doc.nodes[0]._children[0], doc.AsHtmlDocument().Head())
+	assert.Equal(t, 2, doc.First().NumChildren())
+	assert.Equal(t, 1, doc.First().First().NumChildren())
+	assert.Equal(t, 1, doc.First().First().NumChildren())
+	assert.Equal(t, doc.First().First(), doc.AsHtmlDocument().Head())
 
-	doc.Remove(doc.nodes[0])
+	doc.Remove(doc.First())
 
 	assert.Equal(t, 0, doc.Length())
 	assert.True(t, doc.IsEmpty())
@@ -94,7 +94,7 @@ func TestParsePlainText(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, 1, doc.Length())
-	assert.Equal(t, TextNode, doc.nodes[0].NodeType)
+	assert.Equal(t, TextNode, doc.First().NodeType)
 }
 
 func TestDocReplaceNode(t *testing.T) {
@@ -108,16 +108,14 @@ func TestDocReplaceNode(t *testing.T) {
 	assert.False(t, doc.Replace(node, nil))
 	assert.False(t, doc.Replace(node, node))
 
-	assert.Equal(t, "html", doc.nodes[0].NodeName())
-	assert.True(t, doc.Replace(doc.nodes[0], node))
-	assert.Equal(t, "a1", doc.nodes[0].NodeName())
+	assert.Equal(t, "html", doc.First().NodeName())
+	assert.True(t, doc.Replace(doc.First(), node))
+	assert.Equal(t, "a1", doc.First().NodeName())
 }
 
 func TestDocGetElementsByName(t *testing.T) {
-	doc, err := getDoc("")
-	assert.NoError(t, err)
-
-	assert.Nil(t, doc.GetElementsByName("html"))
+	elements, _ := ParseHtmlString("")
+	assert.Equal(t, 0, elements.GetElementsByName("html").Length())
 }
 
 func TestDocGetElementById(t *testing.T) {

@@ -20,7 +20,8 @@ package lhtml
 type HtmlNodeVisitor func(node *HtmlNode) bool
 
 //
-// Allow traversing over the `HtmlDocument`.
+// Allow traversing over the `HtmlDocument`. If a `nil`
+// visitor is supplied, no tree traversal happens.
 //
 func (doc *HtmlElements) Traverse(visitor HtmlNodeVisitor) {
 	if visitor == nil {

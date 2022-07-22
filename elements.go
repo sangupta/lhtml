@@ -78,23 +78,14 @@ func (elements *HtmlElements) IsEmpty() bool {
 // Return the first node in this list of nodes.
 //
 func (elements *HtmlElements) First() *HtmlNode {
-	if elements.Length() == 0 {
-		return nil
-	}
-
-	return elements.nodes[0]
+	return elements.Get(0)
 }
 
 //
 // Return the last node in this list of nodes.
 //
 func (elements *HtmlElements) Last() *HtmlNode {
-	num := elements.Length()
-	if num == 0 {
-		return nil
-	}
-
-	return elements.nodes[num-1]
+	return elements.Get(elements.Length() - 1)
 }
 
 //
@@ -107,7 +98,7 @@ func (elements *HtmlElements) Get(index int) *HtmlNode {
 		return nil
 	}
 
-	return elements.nodes[num]
+	return elements.nodes[index]
 }
 
 //----- FIND methods

@@ -11,8 +11,6 @@
 
 package lhtml
 
-import "strings"
-
 //
 // A wrapper representing a HTML document which is nothing
 // but an array of HTML elements.
@@ -32,13 +30,13 @@ func (document *HtmlDocument) Head() *HtmlNode {
 		return nil
 	}
 
-	for _, node := range document.nodes {
-		if node.NodeType == ElementNode && strings.EqualFold(node.NodeName(), "head") {
-			return node
-		}
+	// do we have an html node?
+	html := document.GetChildrenByName("html")
+	if html.Length() == 0 {
+		return nil
 	}
 
-	return nil
+	return html.First().GetElementsByName("head").First()
 }
 
 //
@@ -52,13 +50,13 @@ func (document *HtmlDocument) Body() *HtmlNode {
 		return nil
 	}
 
-	for _, node := range document.nodes {
-		if node.NodeType == ElementNode && strings.EqualFold(node.NodeName(), "body") {
-			return node
-		}
+	// do we have an html node?
+	html := document.GetChildrenByName("html")
+	if html.Length() == 0 {
+		return nil
 	}
 
-	return nil
+	return html.First().GetElementsByName("body").First()
 }
 
 //

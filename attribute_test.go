@@ -30,13 +30,14 @@ func getAttributeDoc() (*HtmlElements, error) {
 }
 
 func TestAttributes(t *testing.T) {
-	doc, err := getAttributeDoc()
+	elements, err := ParseHtmlString("<html class='a1' class='b1' class='c1'>Hello World</html>")
 	assert.NoError(t, err)
 
-	assert.Equal(t, 1, doc.Length())
-	assert.Equal(t, 1, doc.nodes[0].NumChildren())
+	assert.Equal(t, 1, elements.Length())              // html node
+	assert.Equal(t, 1, elements.First().NumChildren()) // text inside
+	assert.Equal(t, TextNode, elements.First().First().NodeType)
 
-	node := doc.nodes[0]
+	node := elements.First() // html node
 	assert.True(t, node.HasAttribute("class"))
 	assert.False(t, node.HasAttribute("id"))
 
@@ -54,7 +55,7 @@ func TestEmptyAttributes(t *testing.T) {
 	doc, err := getDoc("<html>Hello World</html>")
 	assert.NoError(t, err)
 
-	node := doc.nodes[0]
+	node := doc.First()
 	assert.False(t, node.HasAttribute("class"))
 	assert.Nil(t, node.GetAttribute("class"))
 	assert.Nil(t, node.GetAttributes("class"))
