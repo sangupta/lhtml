@@ -38,6 +38,24 @@ func (node *HtmlNode) ContainsAttributes() bool {
 }
 
 //
+// Add a new attribute to this node. By design, we allow a single
+// tag to hold multiple values for the same attribute name. This is
+// to ensure that we can parse JSX-like syntax to allow templates
+// to hold individual values, and then let the template engines to
+// merge them into a single value.
+//
+func (node *HtmlNode) AddAttribute(key string, value string) {
+	if len(node.Attributes) == 0 {
+		node.Attributes = make([]*HtmlAttribute, 0)
+	}
+
+	node.Attributes = append(node.Attributes, &HtmlAttribute{
+		Name:  key,
+		Value: value,
+	})
+}
+
+//
 // Check if the node has an attribute with the given name.
 //
 // Returns `true` if the an attribute exists, `false`
@@ -112,16 +130,6 @@ func (node *HtmlNode) SetAttribute(key string, value string) bool {
 
 	return true
 }
-
-// //
-// // This method remove all duplicate attributes from the node.
-// // If `merge` is set to `true`, the value from each attribute is
-// // combined together a space. If it's set to `false` the attributes
-// // occuring later are removed.
-// //
-// func (node *HtmlNode) RemoveDuplicateAttributes(merge bool) {
-
-// }
 
 //
 // Find and return all attributes that have the given name.

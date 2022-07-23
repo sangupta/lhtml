@@ -110,7 +110,7 @@ func readElementNode(tokenizer *html.Tokenizer) *HtmlNode {
 		for {
 			key, value, more := tokenizer.TagAttr()
 			if key != nil && value != nil {
-				node.addAttribute(string(key), string(value))
+				node.AddAttribute(string(key), string(value))
 			}
 			if !more {
 				break

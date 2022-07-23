@@ -105,6 +105,20 @@ func (node *HtmlNode) Last() *HtmlNode {
 	return node.Get(node.NumChildren() - 1)
 }
 
+func (node *HtmlNode) GetChildByName(name string) *HtmlNode {
+	if node.NumChildren() == 0 {
+		return nil
+	}
+
+	for _, child := range node._children {
+		if strings.EqualFold(child.NodeName(), name) {
+			return child
+		}
+	}
+
+	return nil
+}
+
 func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
 	elements := NewHtmlElements()
 	node.getElementsByName(name, elements)
@@ -414,24 +428,6 @@ func (node *HtmlNode) InsertAfterMe(additional *HtmlNode) bool {
 }
 
 //----- Internal methods
-
-//
-// Add a new attribute to this node. By design, we allow a single
-// tag to hold multiple values for the same attribute name. This is
-// to ensure that we can parse JSX-like syntax to allow templates
-// to hold individual values, and then let the template engines to
-// merge them into a single value.
-//
-func (node *HtmlNode) addAttribute(key string, value string) {
-	if len(node.Attributes) == 0 {
-		node.Attributes = make([]*HtmlAttribute, 0)
-	}
-
-	node.Attributes = append(node.Attributes, &HtmlAttribute{
-		Name:  key,
-		Value: value,
-	})
-}
 
 //
 // Add a child node to this node.
