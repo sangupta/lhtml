@@ -89,6 +89,13 @@ func (elements *HtmlElements) Last() *HtmlNode {
 }
 
 //
+// Return all child nodes of this element.
+//
+func (elements *HtmlElements) Nodes() []*HtmlNode {
+	return elements.nodes
+}
+
+//
 // Return the node at the given index. If index is out
 // of bounds, this function shall return `nil`.
 //
@@ -104,7 +111,9 @@ func (elements *HtmlElements) Get(index int) *HtmlNode {
 //----- FIND methods
 
 //
-// Get the node occuring before this node in the list.
+// Get the node occuring before this node in the list of nodes.
+// Returns `nil` if the child node is `nil`, or this node has
+// no child nodes, or the given node is not its child.
 //
 func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
 	if child == nil {
@@ -125,7 +134,9 @@ func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
 }
 
 //
-// Get the node occuring after this node in the list.
+// Get the node occuring after this node in the list of nodes.
+// Returns `nil` if the child node is `nil`, or this node has
+// no child nodes, or the given node is not its child.
 //
 func (elements *HtmlElements) GetAfter(child *HtmlNode) *HtmlNode {
 	if child == nil {
@@ -183,7 +194,7 @@ func (elements *HtmlElements) GetElementsByName(name string) *HtmlElements {
 
 	result := NewHtmlElements()
 	for _, child := range elements.nodes {
-		child.getElementsByName(name, result)
+		child.getElementsByNameInternal(name, result)
 	}
 
 	return result

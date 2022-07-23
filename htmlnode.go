@@ -54,10 +54,17 @@ func newNode(name string) *HtmlNode {
 
 //----- basic property accessors
 
+//
+// Return the node name, also known as tag name for
+// this element.
+//
 func (node *HtmlNode) NodeName() string {
 	return strings.TrimSpace(node._tagName)
 }
 
+//
+// Return the total number of children this node has.
+//
 func (node *HtmlNode) NumChildren() int {
 	if node._children == nil {
 		return 0
@@ -66,8 +73,21 @@ func (node *HtmlNode) NumChildren() int {
 	return len(node._children)
 }
 
+//
+// Return the parent of this node, if any. A node at the root
+// level (such as <html />) does not have a parent, but may
+// have an internal `wrappingElement`. This allows us to provide
+// functions to replace/remove node directly.
+//
 func (node *HtmlNode) Parent() *HtmlNode {
 	return node._parent
+}
+
+//
+// Get a list of all children of this `HtmlNode`.
+//
+func (node *HtmlNode) Children() []*HtmlNode {
+	return node._children
 }
 
 //
@@ -84,6 +104,10 @@ func (node *HtmlNode) HasChildren() bool {
 
 //----- FIND methods
 
+//
+// Return the node at a given index. If the index is out
+// of bounds, `nil` is returned.
+//
 func (node *HtmlNode) Get(index int) *HtmlNode {
 	if index < 0 {
 		return nil
@@ -97,10 +121,18 @@ func (node *HtmlNode) Get(index int) *HtmlNode {
 	return node._children[index]
 }
 
+//
+// Return the first child node, if any. Returns `nil` if
+// the node has no children.
+//
 func (node *HtmlNode) First() *HtmlNode {
 	return node.Get(0)
 }
 
+//
+// Return the last child node, if any. Returns `nil` if
+// the node has no children.
+//
 func (node *HtmlNode) Last() *HtmlNode {
 	return node.Get(node.NumChildren() - 1)
 }
@@ -119,13 +151,20 @@ func (node *HtmlNode) GetChildByName(name string) *HtmlNode {
 	return nil
 }
 
+//
+// Return the elements/nodes that match the given tag name, including this element.
+// The node hierarchy is not maintained in results.
+//
 func (node *HtmlNode) GetElementsByName(name string) *HtmlElements {
 	elements := NewHtmlElements()
-	node.getElementsByName(name, elements)
+	node.getElementsByNameInternal(name, elements)
 	return elements
 }
 
-func (node *HtmlNode) getElementsByName(name string, elements *HtmlElements) {
+//
+// Internal method to help with collection of nodes that match the tag name.
+//
+func (node *HtmlNode) getElementsByNameInternal(name string, elements *HtmlElements) {
 	name = strings.TrimSpace(name)
 	name = strings.ToLower(name)
 
@@ -138,7 +177,7 @@ func (node *HtmlNode) getElementsByName(name string, elements *HtmlElements) {
 	}
 
 	for _, child := range node._children {
-		child.getElementsByName(name, elements)
+		child.getElementsByNameInternal(name, elements)
 	}
 }
 
@@ -166,6 +205,10 @@ func (node *HtmlNode) GetElementById(id string) *HtmlNode {
 	return nil
 }
 
+//
+// Return the child at a given index. If the index is out of bounds'
+// `nil` is returned.
+//
 func (node *HtmlNode) GetChild(index int) *HtmlNode {
 	num := node.NumChildren()
 	if index < 0 || index >= num {
@@ -175,7 +218,12 @@ func (node *HtmlNode) GetChild(index int) *HtmlNode {
 	return node._children[index]
 }
 
-func (node *HtmlNode) GetBefore(child *HtmlNode) *HtmlNode {
+//
+// Return the node before the given child node. Returns `nil`
+// if the child is `nil`, or is not a direct child of this node,
+// or if this is the first node in list.
+//
+func (node *HtmlNode) GetChildBefore(child *HtmlNode) *HtmlNode {
 	if child == nil {
 		return nil
 	}
@@ -197,7 +245,12 @@ func (node *HtmlNode) GetBefore(child *HtmlNode) *HtmlNode {
 	return nil
 }
 
-func (node *HtmlNode) GetAfter(child *HtmlNode) *HtmlNode {
+//
+// Return the node after the given child node. Returns `nil`
+// if the child is `nil`, or is not a direct child of this node,
+// or if this is the last node in list.
+//
+func (node *HtmlNode) GetChildAfter(child *HtmlNode) *HtmlNode {
 	if child == nil {
 		return nil
 	}
@@ -219,17 +272,25 @@ func (node *HtmlNode) GetAfter(child *HtmlNode) *HtmlNode {
 	return nil
 }
 
+//
+// Return the node before this node in the list. Returns
+// `nil` if this node is detached, or has no previous sibling.
+//
 func (node *HtmlNode) PrevSibling() *HtmlNode {
 	if node._parent != nil {
-		return node._parent.GetAfter(node)
+		return node._parent.GetChildAfter(node)
 	}
 
 	return nil
 }
 
+//
+// Return the node after this node in the list. Returns
+// `nil` if this node is detached, or has no next sibling.
+//
 func (node *HtmlNode) NextSibling() *HtmlNode {
 	if node._parent != nil {
-		return node._parent.GetAfter(node)
+		return node._parent.GetChildAfter(node)
 	}
 
 	return nil
@@ -337,18 +398,23 @@ func (node *HtmlNode) ReplaceChild(original *HtmlNode, replacement *HtmlNode) bo
 	return false
 }
 
-func (node *HtmlNode) InsertChildAt(index int, additional *HtmlNode) bool {
+//
+// Insert the child at the given index. If the index is less than zero
+// the node is inserted as the first node. If the index is greater than
+// the last node index it is inserted as the last node.
+//
+func (node *HtmlNode) InsertChildAt(index int, additional *HtmlNode) {
 	// first addition
 	if index <= 0 {
 		node._children = append([]*HtmlNode{additional}, node._children...)
-		return true
+		return
 	}
 
 	// falls at the end
 	num := len(node._children)
 	if index >= num {
 		node._children = append(node._children, additional)
-		return true
+		return
 	}
 
 	// falls in between
@@ -356,11 +422,13 @@ func (node *HtmlNode) InsertChildAt(index int, additional *HtmlNode) bool {
 	suffix := node._children[index:]
 	node._children = append(prefix, additional)
 	node._children = append(node._children, suffix...)
-	return true
+	return
 }
 
 //
-// Insert a node before given child
+// Insert a node before given child. Returns `true` if the node
+// is inserted. Returns `false` if the node has no children, or
+// the given child does not belong to this node.
 //
 func (node *HtmlNode) InsertBeforeChild(child *HtmlNode, additional *HtmlNode) bool {
 	if !node.HasChildren() {
@@ -373,7 +441,9 @@ func (node *HtmlNode) InsertBeforeChild(child *HtmlNode, additional *HtmlNode) b
 			if newIndex == -1 {
 				newIndex = 0
 			}
-			return node.InsertChildAt(newIndex, additional)
+
+			node.InsertChildAt(newIndex, additional)
+			return true
 		}
 	}
 
@@ -381,7 +451,9 @@ func (node *HtmlNode) InsertBeforeChild(child *HtmlNode, additional *HtmlNode) b
 }
 
 //
-// Insert a node after given child.
+// Insert a node after given child. Returns `true` if the node
+// is inserted. Returns `false` if the node has no children, or
+// the given child does not belong to this node.
 //
 func (node *HtmlNode) InsertAfterChild(child *HtmlNode, additional *HtmlNode) bool {
 	if !node.HasChildren() {
@@ -390,7 +462,8 @@ func (node *HtmlNode) InsertAfterChild(child *HtmlNode, additional *HtmlNode) bo
 
 	for index, kid := range node._children {
 		if kid == child {
-			return node.InsertChildAt(index+1, additional)
+			node.InsertChildAt(index+1, additional)
+			return true
 		}
 	}
 
@@ -398,7 +471,9 @@ func (node *HtmlNode) InsertAfterChild(child *HtmlNode, additional *HtmlNode) bo
 }
 
 //
-// Insert a node before me.
+// Insert a node before this node in its parent's child nodes.
+// Returns `true` if the node was inserted. Returns `false` if
+// this node has no parent.
 //
 func (node *HtmlNode) InsertBeforeMe(additional *HtmlNode) bool {
 	if node._parent != nil {
@@ -413,7 +488,9 @@ func (node *HtmlNode) InsertBeforeMe(additional *HtmlNode) bool {
 }
 
 //
-// Insert a node after me.
+// Insert a node after this node in its parent's child nodes.
+// Returns `true` if the node was inserted. Returns `false` if
+// this node has no parent.
 //
 func (node *HtmlNode) InsertAfterMe(additional *HtmlNode) bool {
 	if node._parent != nil {
@@ -440,6 +517,10 @@ func (node *HtmlNode) addChild(child *HtmlNode) {
 	node._children = append(node._children, child)
 }
 
+//
+// Detach the given node. Remove its associated with its
+// parent or its wrapping element.
+//
 func (node *HtmlNode) detach() {
 	node._parent = nil
 	node._wrappingElements = nil
