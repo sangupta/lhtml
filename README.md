@@ -168,6 +168,11 @@ func test() {
   - `$ go test ./... -v -coverprofile coverage.out`
   - `$ go tool cover -html=coverage.out`
 
+* To publish the Go module:
+  - `$ git tag v0.x.0`
+  - `$ git push origin v0.x.0`
+  - `$ GOPROXY=proxy.golang.org go list -m github.com/sangupta/lhtml@v0.x.0`
+
 # Changelog
 
 * **Version 0.1.0**
