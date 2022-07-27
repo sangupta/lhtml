@@ -46,3 +46,4 @@ docs/*
 # Project specific
 coverage.out
 coverage.html
+test/*

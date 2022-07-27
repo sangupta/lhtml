@@ -105,6 +105,11 @@ func readElementNode(tokenizer *html.Tokenizer) *HtmlNode {
 		NodeType:      ElementNode,
 	}
 
+	// if this is title element, set that next is not raw tag
+	if strings.EqualFold(node._tagName, "title") {
+		tokenizer.NextIsNotRawText()
+	}
+
 	// copy attributes as needed
 	if hasAttributes {
 		for {
@@ -157,8 +162,8 @@ func handleErrorToken(document *HtmlElements, tokenizer *html.Tokenizer) error {
 // lets process
 func handleTextToken(document *HtmlElements, stack *nodeStack, tokenizer *html.Tokenizer) error {
 	text := string(tokenizer.Text())
-	text = strings.TrimLeft(text, whitespace)
-	if len(text) == 0 {
+	trimmedText := strings.TrimLeft(text, whitespace)
+	if len(trimmedText) == 0 {
 		return nil
 	}
 

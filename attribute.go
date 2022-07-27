@@ -11,7 +11,10 @@
 
 package lhtml
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
 //
 // Holds the values for an attribute pair.
@@ -83,6 +86,20 @@ func (node *HtmlNode) GetAttribute(key string) *HtmlAttribute {
 	}
 
 	return nil
+}
+
+func (node *HtmlNode) GetAttributeValue(key string) (string, error) {
+	if !node.ContainsAttributes() {
+		return "", errors.New("Attribute '" + key + "' is not defined")
+	}
+
+	for _, attr := range node.Attributes {
+		if strings.EqualFold(attr.Name, key) {
+			return attr.Value, nil
+		}
+	}
+
+	return "", errors.New("Attribute '" + key + "' is not defined")
 }
 
 func (node *HtmlNode) RemoveAttribute(key string) bool {

@@ -11,7 +11,10 @@
 
 package lhtml
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
 //
 // The structure that holds a group of HTML elements.
@@ -396,6 +399,31 @@ func (elements *HtmlElements) Replace(childNode *HtmlNode, newNode *HtmlNode) bo
 	}
 
 	return false
+}
+
+//----- tostring()
+
+func (elements *HtmlElements) String() (string, error) {
+	if elements.IsEmpty() {
+		return "", nil
+	}
+
+	builder := strings.Builder{}
+	for _, node := range elements.nodes {
+		node.WriteToBuilder(&builder)
+	}
+
+	builder.WriteString("\n")
+	return builder.String(), nil
+}
+
+func (elements *HtmlElements) WrappedString(node *HtmlNode) (string, error) {
+	if node == nil {
+		return "", errors.New("Wrapping node cannot be nil")
+	}
+
+	node._children = elements.nodes
+	return node.String(), nil
 }
 
 //----- Internal methods

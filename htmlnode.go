@@ -504,6 +504,53 @@ func (node *HtmlNode) InsertAfterMe(additional *HtmlNode) bool {
 	return false
 }
 
+//----- tostring()
+
+func (node *HtmlNode) String() string {
+	builder := strings.Builder{}
+	node.WriteToBuilder(&builder)
+	return builder.String()
+}
+
+func (node *HtmlNode) WriteToBuilder(builder *strings.Builder) {
+	if node.NodeType == DoctypeNode || node.NodeType == TextNode || node.NodeType == CommentNode {
+		builder.WriteString("**")
+		builder.WriteString(node.Data)
+		return
+	}
+
+	builder.WriteString("<")
+	builder.WriteString(node.NodeName())
+
+	// attributes
+	if node.ContainsAttributes() {
+		for _, attr := range node.Attributes {
+			builder.WriteString(" ")
+			builder.WriteString(attr.Name)
+			builder.WriteString("=\"")
+			builder.WriteString(attr.Value)
+			builder.WriteString("\"")
+		}
+	}
+
+	// self-closing?
+	if !node.HasChildren() {
+		builder.WriteString(" />")
+	} else {
+		builder.WriteString(">\n")
+		for _, child := range node._children {
+			child.WriteToBuilder(builder)
+		}
+
+		// close
+		builder.WriteString("</")
+		builder.WriteString(node.NodeName())
+		builder.WriteString(">\n")
+	}
+
+	builder.WriteString(" ")
+}
+
 //----- Internal methods
 
 //
