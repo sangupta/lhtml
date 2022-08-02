@@ -4,6 +4,8 @@
 [![Code Coverage](https://codecov.io/gh/sangupta/lhtml/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/gh/sangupta/lhtml)
 [![go.mod version](https://img.shields.io/github/go-mod/go-version/sangupta/lhtml.svg)](https://github.com/sangupta/lhtml)
 ![GitHub](https://img.shields.io/github/license/sangupta/lhtml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sangupta/lhtml)](https://goreportcard.com/report/github.com/sangupta/lhtml)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/sangupta/lhtml)](https://pkg.go.dev/github.com/sangupta/lhtml)
 
 `lhtml` is a lenient HTML parser for Go. 
 
