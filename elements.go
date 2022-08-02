@@ -114,7 +114,7 @@ func (elements *HtmlElements) Get(index int) *HtmlNode {
 //----- FIND methods
 
 //
-// Get the node occuring before this node in the list of nodes.
+// Get the node occurring before this node in the list of nodes.
 // Returns `nil` if the child node is `nil`, or this node has
 // no child nodes, or the given node is not its child.
 //
@@ -137,7 +137,7 @@ func (elements *HtmlElements) GetBefore(child *HtmlNode) *HtmlNode {
 }
 
 //
-// Get the node occuring after this node in the list of nodes.
+// Get the node occurring after this node in the list of nodes.
 // Returns `nil` if the child node is `nil`, or this node has
 // no child nodes, or the given node is not its child.
 //
