@@ -1,5 +1,9 @@
-name: test
-on: [push, pull_request]
+name: Build & Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   GOPROXY: https://proxy.golang.org,direct
@@ -28,11 +32,3 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.out
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: [ 'go' ]
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
