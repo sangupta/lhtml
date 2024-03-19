@@ -162,10 +162,12 @@ func handleErrorToken(document *HtmlElements, tokenizer *html.Tokenizer) error {
 // lets process
 func handleTextToken(document *HtmlElements, stack *nodeStack, tokenizer *html.Tokenizer) error {
 	text := string(tokenizer.Text())
+	/*
 	trimmedText := strings.TrimLeft(text, whitespace)
 	if len(trimmedText) == 0 {
 		return nil
 	}
+	*/
 
 	node := HtmlNode{
 		NodeType: TextNode,

@@ -514,7 +514,6 @@ func (node *HtmlNode) String() string {
 
 func (node *HtmlNode) WriteToBuilder(builder *strings.Builder) {
 	if node.NodeType == DoctypeNode || node.NodeType == TextNode || node.NodeType == CommentNode {
-		builder.WriteString("**")
 		builder.WriteString(node.Data)
 		return
 	}
@@ -537,7 +536,7 @@ func (node *HtmlNode) WriteToBuilder(builder *strings.Builder) {
 	if !node.HasChildren() {
 		builder.WriteString(" />")
 	} else {
-		builder.WriteString(">\n")
+		builder.WriteString(">")
 		for _, child := range node._children {
 			child.WriteToBuilder(builder)
 		}
@@ -545,7 +544,7 @@ func (node *HtmlNode) WriteToBuilder(builder *strings.Builder) {
 		// close
 		builder.WriteString("</")
 		builder.WriteString(node.NodeName())
-		builder.WriteString(">\n")
+		builder.WriteString(">")
 	}
 
 	builder.WriteString(" ")
